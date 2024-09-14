@@ -1,0 +1,146 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-background {
+    background: url('bg.jpg') no-repeat center center fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.login-bg-image {
+    width: 100%;
+}
+
+.login-box {
+    background-color: white;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 550px;
+    margin-top: -20px;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 20px;
+    font-size: 0.85em;
+}
+
+p a {
+    color: #00A33C;
+    text-decoration: none;
+}
+
+.textbox {
+    margin-bottom: 15px;
+}
+
+.textbox label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.textbox input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.forgot-password {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.forgot-password a {
+    color: #6ebd46;
+    text-decoration: none;
+    font-size: 0.85em;
+}
+
+button {
+    background-color: #00A33C;
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button:hover {
+    background-color: #008f32;
+}
+
+/* Responsive Design */
+@media (max-width: 998px) {
+    .login-background {
+        width: 90%;
+    }
+
+    .login-box {
+        width: 90%;
+        padding: 40px;
+    }
+
+    h1 {
+        font-size: 2.2em;
+    }
+
+    p {
+        font-size: 0.8em;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 0.9em;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-box {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 0.7em;
+    }
+
+    button {
+        padding: 10px 25px;
+        font-size: 0.8em;
+    }
+}

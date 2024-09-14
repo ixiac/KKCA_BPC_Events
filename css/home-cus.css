@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+    background-color: #f1f1f1;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 1000;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    width: 50px;
+    margin-right: 10px;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li {
+    padding: 5px 10px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-profile img {
+    width: 30px;
+    border-radius: 50%;
+}
+
+.main-container {
+    display: flex;
+    min-height: calc(100vh - 80px);
+    overflow: none;
+    width: 100%;
+}
+
+aside {
+    background-color: #1f3d7a;
+    color: #fff;
+    width: 250px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+aside h2 {
+    margin-bottom: 20px;
+}
+
+aside ul {
+    list-style: none;
+}
+
+aside ul li {
+    margin-bottom: 10px;
+}
+
+.signout-btn {
+    padding: 10px;
+    background-color: #f44;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.event-booking {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.event-booking img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.appointment-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.event-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.stat-box {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+footer {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #ccc;
+    width: 100%;
+}
+
+footer .contact-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+@media (max-width: 1024px) {
+    nav ul {
+        gap: 10px;
+    }
+
+    .main-container {
+        flex-direction: column;
+    }
+
+    aside {
+        width: 100%;
+        padding: 10px;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .event-stats {
+        flex-direction: column;
+    }
+
+    .stat-box {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .user-profile {
+        align-self: flex-end;
+    }
+
+    .main-container {
+        flex-direction: column;
+    }
+
+    aside {
+        width: 100%;
+        padding: 10px;
+    }
+
+    main {
+        padding: 10px;
+    }
+
+    .event-stats {
+        flex-direction: column;
+    }
+
+    .stat-box {
+        margin-bottom: 10px;
+    }
+
+    .appointment-btn {
+        width: 100%;
+    }
+
+    footer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    footer .contact-info {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
