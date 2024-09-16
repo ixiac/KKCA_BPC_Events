@@ -1,3 +1,5 @@
+@import url(root.css);
+
 * {
   margin: 0;
   padding: 0;
@@ -51,8 +53,9 @@ header {
 
 /*** Footer Start ***/
 .footer {
-  background: #203b70;
+  background: var(--bs-primary);
 }
+
 .footer .footer-item a {
   line-height: 30px;
   color: white;
