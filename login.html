@@ -4,29 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <link rel="stylesheet" href="css/login.css">
 </head>
+
 <body>
-    <div class="container">
-        <div></div>
-        <div class="login-background">
-            <img src="images/login-BG.png" alt="Login Background" class="login-bg-image">
-            <div class="login-box">
-                <h1>LOGIN</h1>
-                <p>New here? <a href="#">Sign-up</a></p>
+    <div class="container-fluid vh-100 d-flex justify-content-center align-items-center">
+        <div class="login-background border-1 shadow-lg text-center">
+            <img src="images/login-BG.png" alt="Login Background" class="img-fluid login-bg-image mb-3">
+            <div class="login-box container-fluid bg-white p-5 rounded shadow-lg">
+                <h1 class="mb-3"><b>LOGIN</b></h1>
+                <p class="fs-6">New here? <a class="fs-6" href="#">Sign-up</a></p>
                 <form>
-                    <div class="textbox">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" placeholder="Your Username">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" placeholder="Username">
                     </div>
-                    <div class="textbox">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Password">
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" placeholder="Password">
                     </div>
-                    <div class="forgot-password">
-                        <a href="#">Forgot Password? <span>Click here</span></a>
+                    <div class="mb-3 text-end d-flex flex-row column-gap-2 justify-content-end">
+                        <p class="fs-6">Forgot Password?</p>
+                        <a href="#" class="colog text-decoration-none">Click here</a>
                     </div>
-                    <button type="submit">Login</button>
+                    <button type="submit" class="fs-5 btn btn-success">Login</button>
                 </form>
             </div>
         </div>
