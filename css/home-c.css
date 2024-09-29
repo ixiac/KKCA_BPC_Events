@@ -1,86 +1,196 @@
 @import url(root.css);
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Trebuchet MS", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Trebuchet MS", sans-serif;
 }
 
 header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background-color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background-color: white;
 }
 
 .logo {
-    height: 60px;
+  height: 60px;
 }
 
 .logo-text {
-    font-size: 18px;
-    font-weight: bold;
-    white-space: nowrap;
+  font-size: 2rem !important;
+  font-weight: bold;
+  white-space: nowrap;
 }
 
 .separator {
-    height: 40px;
-    width: 1.5px;
-    background-color: black;
+  height: 40px;
+  width: 1.5px;
+  background-color: black;
 }
 
 .sidebar {
-    background-color: var(--bs-primary) !important;
-    color: white;
-    height: 100vh;
-    padding: 20px;
+  background-color: var(--bs-primary) !important;
+  color: white;
+  padding: 20px;
+  height: 89.7vh;
 }
 
 .sidebar a {
-    color: white;
-    text-decoration: none;
-    margin: 15px 0;
-    display: block;
+  color: white;
+  text-decoration: none;
+  margin: 15px 0;
+  display: block;
 }
 
 .sidebar .sign-out {
-    background-color: white;
-    padding: 1%;
-    text-align: center;
-    margin-top: 19rem;
-    border-radius: 4%;
+  background-color: white;
+  text-align: center;
+  margin: 0 0 10px 120px;
+  border-radius: 4%;
+}
+
+.side-menu {
+  max-height: 600px;
+
+}
+
+.side-menu li {
+  list-style: none;
+  width: 90%;
+  margin-bottom: 1%;
+}
+
+.side-menu li label {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-size: 140%;
+  cursor: pointer;
+  position: relative;
+  justify-content: space-between;
+}
+
+.side-menu input[type="checkbox"] {
+  display: none;
+}
+
+.side-menu .content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out, padding 0.5s ease-out;
+  padding: 0 10px;
+  background-color: var(--bs-primary);
+  border-radius: 10px;
+}
+
+.side-menu input[type="checkbox"]:checked + label + .content {
+  max-height: 400px;
+  padding: 10px;
+}
+
+.rotate {
+  transition: transform 0.3s ease;
+  transform: rotate(90deg);
 }
 
 .main-content {
-    padding: 20px;
+  padding: 3.4rem 6.8rem;
+  background-color: #F5F5F5;
 }
 
-/* User profile section */
 .profile-card {
-    background-color: #112B54;
-    color: white;
-    border-radius: 10px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
+  background-color: var(--bs-primary);
+  border: 1px solid var(--bs-primary);
+  border-bottom: none !important;
+  color: white;
+  border-radius: 15px 15px 0 0;
+  padding: 2rem;
+  height: 180px;
+  display: flex;
+  align-items: center;
 }
 
 .profile-card img {
-    border-radius: 50%;
-    margin-right: 20px;
+  background-color: white;
+  width: 12rem;
+  border: 25px solid white;
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 50%;
+  margin-right: 20px;
+  margin-left: 3rem;
+  margin-top: 5%;
+  z-index: 1;
+}
+
+.avatar-name {
+  margin-top: 13%;
+  margin-left: 1rem;
+  z-index: 1;
+}
+
+.avatar-name p {
+  color: black;
+  font-size: 1.5rem;
+  padding-left: 5px;
+}
+
+.profile-tabs {
+  margin-top: -45px;
+  margin-right: 2.5rem;
+}
+
+.nav-tabs .nav-link {
+  background-color: var(--bs-tabs);
+  color: white;
+  font-size: 1.2rem !important;
+  font-weight: bold;
+  border: 1px solid var(--bs-primary);
+  border-radius: 15px 15px 0 0;
+  width: 9rem;
+  height: 5vh;
+}
+
+.card {
+  border-top: none !important;
+  border: 1px solid var(--bs-primary);
+  border-radius: 0 0 10px 10px !important;
+  height: 45vh;
 }
 
 .event-card {
-    border: 1px solid #112B54;
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 10px;
-    text-align: center;
+  border: 1px solid var(--bs-primary) !important;
+  border-radius: 0 0 10px 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.book-card {
+  border: 1px solid var(--bs-primary);
+  border-radius: 15px;
+  height: 35vh;
+}
+
+.book-btn {
+  border: 1px solid var(--bs-primary);
+  border-radius: 12px;
+
+}
+
+.book-btn i {
+  font-size: 35px;
+}
+
+.foot-logo {
+  height: 70px;
 }
 
 .footer {
-    background-color: #f8f9fa;
-    padding: 10px;
-    text-align: center;
+  border-top: 1px solid var(--bs-primary);
+  background-color: white;
+  text-align: center;
+  font-size: 1.04rem;
+  padding-top: 0.7%;
 }
