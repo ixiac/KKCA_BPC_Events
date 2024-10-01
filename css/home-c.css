@@ -170,7 +170,6 @@ header {
 .book-card {
   border: 1px solid var(--bs-primary);
   border-radius: 15px;
-  height: 35vh;
 }
 
 .book-btn {
@@ -180,7 +179,7 @@ header {
 }
 
 .book-btn i {
-  font-size: 35px;
+  font-size: 45px;
 }
 
 .foot-logo {
