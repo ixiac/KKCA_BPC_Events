@@ -1,0 +1,24 @@
+:root {
+  --bs-primary: #203b70 !important;
+  --bs-secondary: #ced4da !important;
+  --bs-login: #00A33C !important;
+  --bs-tabs: #465F8F !important;
+  --bs-orange: #fd7e14 !important;
+  --bs-yellow: #ffc107 !important;
+}
+
+.text-primary {
+  color: var(--bs-primary) !important;
+}
+
+.bg-primary {
+  background-color: var(--bs-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--bs-primary) !important;
+}
+
+.text-red {
+  color: var(--bs-red) !important;
+}

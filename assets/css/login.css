@@ -1,0 +1,106 @@
+@import url(root.css);
+
+* {
+    box-sizing: border-box;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+body {
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+}
+
+.login-background {
+    background: url('bg.jpg') no-repeat center center fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    margin-top: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.login-bg-image {
+    max-width: 100%;
+}
+
+.login-box {
+    max-width: 600px;
+    margin-top: -100px !important;
+    border-radius: 2% !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+p {
+    margin-bottom: 20px;
+    font-size: 0.85em;
+}
+
+p a {
+    color: #00A33C;
+    text-decoration: none;
+}
+
+.colog {
+    color: var(--bs-login) !important;
+}
+
+.colog {
+    position: relative;
+    text-decoration: none;
+}
+
+.colog::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.colog:hover::after {
+    visibility: visible;
+    width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+    border: 1px solid #203b70 !important;
+    outline: none;
+    box-shadow: 0 0 5px rgba(32, 59, 112, 0.5);
+}
+
+button {
+    padding: 12px 40px;
+    font-size: 1.1em;
+    width: 30%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-box {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+
+    p {
+        font-size: 0.7em;
+    }
+
+    button {
+        padding: 10px 25px;
+        font-size: 0.8em;
+    }
+}
