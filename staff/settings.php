@@ -1,32 +1,20 @@
 <?php
-
 session_start();
 include("partial/db.php");
 
-// Redirect to login if user is not logged in
-if (!isset($_SESSION['user_no'])) {
-    header("Location: index");
-    exit();
-}
-
-// Fetch user data from the database
-$user_no = $_SESSION['user_no']; // Get the user ID from the session
-$query = "SELECT fname, lname, email, username, age FROM accounts WHERE user_no = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_no);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: ../index");
+    exit;
 } else {
-    // Redirect to login if user data not found
-    header("Location: index");
-    exit();
-}
+    $sql = "SELECT * FROM staff WHERE SFID = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $user_id = $row["CID"];
 
-$active = 'settings';
+    $active = 'settings';
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

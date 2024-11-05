@@ -1,31 +1,19 @@
 <?php
-
 session_start();
 include("partial/db.php");
 
-// Redirect to login if user is not logged in
-if (!isset($_SESSION['user_no'])) {
-    header("Location: index");
-    exit();
-}
-
-// Fetch user data from the database
-$user_no = $_SESSION['user_no']; // Get the user ID from the session
-$query = "SELECT fname, lname, email, username, age FROM accounts WHERE user_no = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_no);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: ../index");
+    exit;
 } else {
-    // Redirect to login if user data not found
-    header("Location: index");
-    exit();
+    $sql = "SELECT * FROM customer WHERE CID = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $user_id = $row["CID"];
+
+    $active = 'settings';
 }
 
-$active = 'settings';
 ?>
 
 <!DOCTYPE html>
@@ -94,16 +82,16 @@ $active = 'settings';
                                     <div class="row ps-3 pe-3">
                                         <div class="col-md-6 form-group">
                                             <label for="fname">First Name</label>
-                                            <input type="text" class="form-control" id="fname" value="<?= htmlspecialchars($user['fname']) ?>" readonly>
+                                            <input type="text" class="form-control" id="fname" value="<?= htmlspecialchars($row['fname']) ?>" readonly>
                                         </div>
                                         <div class="col-md-6 form-group">
                                             <label for="lname">Last Name</label>
-                                            <input type="text" class="form-control" id="lname" value="<?= htmlspecialchars($user['lname']) ?>" readonly>
+                                            <input type="text" class="form-control" id="lname" value="<?= htmlspecialchars($row['lname']) ?>" readonly>
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label for="username">Username</label>
-                                        <input type="text" class="form-control" id="username" value="<?= htmlspecialchars($user['username']) ?>" readonly>
+                                        <input type="text" class="form-control" id="username" value="<?= htmlspecialchars($row['username']) ?>" readonly>
                                     </div>
                                     <div class="form-group">
                                         <label for="exampleFormControlFile1">Profile</label><br>
@@ -117,13 +105,13 @@ $active = 'settings';
                                         <div class="col-md-8 form-group">
                                             <label for="email">Email Address</label>
                                             <div class="input-group mb-3">
-                                                <input type="text" class="form-control" value="<?= htmlspecialchars($user['email']) ?>" readonly>
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($row['email']) ?>" readonly>
                                                 <span class="input-group-text" id="basic-addon2">@gmail.com</span>
                                             </div>
                                         </div>
                                         <div class="col-md-4 form-group">
                                             <label for="age">Age</label>
-                                            <input type="text" class="form-control" id="age" value="<?= htmlspecialchars($user['age'] ?? '') ?>" readonly>
+                                            <input type="text" class="form-control" id="age" value="<?= htmlspecialchars($row['age'] ?? '') ?>" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -141,9 +129,9 @@ $active = 'settings';
                                 </div>
                                 <div class="card-body">
                                     <div class="user-profile text-center mt-5">
-                                        <div class="h1"><?= htmlspecialchars($user['username']) ?>, <?= htmlspecialchars($user['age'] ?? '') ?></div>
-                                        <div class="job h4"><?= htmlspecialchars($user['fname']) ?> <?= htmlspecialchars($user['lname']) ?></div>
-                                        <div class="desc h4"><?= htmlspecialchars($user['email']) ?></div>
+                                        <div class="h1"><?= htmlspecialchars($row['username']) ?>, <?= htmlspecialchars($row['age'] ?? '') ?></div>
+                                        <div class="job h4"><?= htmlspecialchars($row['fname']) ?> <?= htmlspecialchars($row['lname']) ?></div>
+                                        <div class="desc h4"><?= htmlspecialchars($row['email']) ?></div>
                                     </div>
                                 </div>
                                 <div class="card-footer">

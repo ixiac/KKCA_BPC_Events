@@ -4,23 +4,26 @@ include("db.php"); // Include the database connection file
 
 $error = '';
 $success = '';
-$user_type = 'customer';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get data from the form
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $username = $_POST['username'];
+    $sex = isset($_POST['sex']) && $_POST['sex'] == '1' ? 1 : 0; // 1 for female, 0 for male
+    $tel_no = $_POST['tel_no'];
     $age = $_POST['age'];
+    $address = $_POST['address'];
     $email = $_POST['email'] . '@gmail.com'; // Append domain
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $date_created = date("Y-m-d H:i:s"); // Assuming current timestamp for date_created
 
     // Basic validation
-    if (empty($fname) || empty($lname) || empty($username) || empty($age) || empty($email) || empty($password)) {
+    if (empty($fname) || empty($lname) || empty($username) || empty($tel_no) || empty($age) || empty($address) || empty($email) || empty($password)) {
         $error = 'Please fill all fields';
     } else {
         // Check if the username or email already exists
-        $check_user_query = "SELECT * FROM accounts WHERE username = ? OR email = ?";
+        $check_user_query = "SELECT * FROM customer WHERE username = ? OR email = ?";
         $stmt = $conn->prepare($check_user_query);
         $stmt->bind_param("ss", $username, $email);
         $stmt->execute();
@@ -29,10 +32,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = 'Username or email already exists';
         } else {
-            // Insert the new user into the accounts table
-            $insert_query = "INSERT INTO accounts (user_type, fname, lname, username, age, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            // Insert the new user into the customer table
+            $insert_query = "INSERT INTO customer (username, password, fname, lname, sex, address, tel_no, age, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($insert_query);
-            $stmt->bind_param("ssssiss", $user_type, $fname, $lname, $username, $age, $email, $password);
+            $stmt->bind_param("ssssissis", $username, $password, $fname, $lname, $sex, $address, $tel_no, $age, $email);
 
             if ($stmt->execute()) {
                 $success = 'Account created successfully! Redirecting...';
@@ -42,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         window.location.href = 'login';
                         }, 1000);
                     </script>";
-
             } else {
                 $error = 'Error: Could not create account';
             }
@@ -50,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -92,6 +95,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     <div class="mb-1 row">
+                        <div class="col-md-6 form-group">
+                            <label>Gender</label><br>
+                            <div class="row">
+                                <div class="col form-check ps-5">
+                                    <input class="form-check-input" type="radio" name="sex" value="0" id="flexRadioDefault1">
+                                    <label class="form-check-label" for="flexRadioDefault1"> Male </label>
+                                </div>
+                                <div class="col form-check">
+                                    <input class="form-check-input" type="radio" name="sex" value="1" id="flexRadioDefault2" checked>
+                                    <label class="form-check-label" for="flexRadioDefault2"> Female </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="telno">Tel/Phone No.</label>
+                            <input type="text" class="form-control" id="tel_no" name="tel_no" placeholder="09XXXXXXXXX" required>
+                        </div>
+                    </div>
+                    <div class="mb-1 row">
                         <div class="col-md-9 form-group">
                             <label for="username">Username</label>
                             <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
@@ -101,11 +123,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="text" class="form-control" id="age" name="age" required>
                         </div>
                     </div>
-                    <div class="mb-1 form-group">
-                        <label for="email">Email Address</label>
-                        <div class="input-group mb-1">
-                            <input type="text" class="form-control" id="email" name="email" placeholder="Email Address" required>
-                            <span class="input-group-text">@gmail.com</span>
+                    <div class="row">
+                        <div class="col-md-7 mb-1 form-group">
+                            <label for="email">Email Address</label>
+                            <div class="input-group mb-1">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Email Address" required>
+                                <span class="input-group-text">@gmail.com</span>
+                            </div>
+                        </div>
+                        <div class="col-md-5 form-group">
+                            <label for="address">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Address" required>
                         </div>
                     </div>
                     <div class="mb-2 form-group">

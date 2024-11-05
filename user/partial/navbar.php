@@ -14,7 +14,7 @@
                         <img src="../assets/img/myfavgayman.jpg" alt="Profile Image" class="avatar-img rounded-circle" />
                     </div>
                     <span class="profile-username">
-                        <span class="fw-bold"><?= htmlspecialchars($user['username']) ?></span>
+                        <span class="fw-bold"><?= htmlspecialchars($row['username']) ?></span>
                     </span>
                 </a>
                 <ul class="dropdown-menu dropdown-user animated fadeIn">
@@ -25,8 +25,8 @@
                                     <img src="../assets/img/myfavgayman.jpg" alt="Profile Image" class="avatar-img rounded" />
                                 </div>
                                 <div class="u-text">
-                                    <h4><?= htmlspecialchars($user['fname']) . " " . htmlspecialchars($user['lname']) ?></h4>
-                                    <p class="text-muted"><?= htmlspecialchars($user['email']) ?></p>
+                                    <h4><?= htmlspecialchars($row['fname']) . " " . htmlspecialchars($row['lname']) ?></h4>
+                                    <p class="text-muted"><?= htmlspecialchars($row['email']) ?></p>
                                 </div>
                             </div>
                         </li>

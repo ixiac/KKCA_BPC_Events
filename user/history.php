@@ -3,49 +3,36 @@
 session_start();
 include("partial/db.php");
 
-// Redirect to login if user is not logged in
-if (!isset($_SESSION['user_no'])) {
-    header("Location: index");
-    exit();
-}
-
-// Fetch user data from the database
-$user_no = $_SESSION['user_no']; // Get the user ID from the session
-$query = "SELECT fname, lname, email, username, age FROM accounts WHERE user_no = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_no);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $username = $user['username']; // Get the logged-in user's username
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: ../index");
+    exit;
 } else {
-    // Redirect to login if user data not found
-    header("Location: index");
-    exit();
+    $sql = "SELECT * FROM customer WHERE CID = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $user_id = $row["CID"];
+
+    // Fetch events created by the logged-in user
+    $events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status FROM public_events WHERE event_by = ?";
+    $stmt = $conn->prepare($events_query);
+    $stmt->bind_param("i", $user_id); // Fetch events by the user_no
+
+    if ($stmt->execute()) {
+        $events_result = $stmt->get_result();
+    } else {
+        // Add error handling to catch issues with the query
+        echo "Error fetching events: " . $stmt->error;
+    }
+
+    // Debug to check if events are being fetched
+    if ($events_result->num_rows > 0) {
+        echo "Events fetched: " . $events_result->num_rows; // Temporary debug output
+    } else {
+        echo "No events found for the user.";
+    }
+
+    $active = 'history';
 }
-
-// Fetch events created by the logged-in user
-$events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status FROM public_events WHERE event_by = ?";
-$stmt = $conn->prepare($events_query);
-$stmt->bind_param("i", $user_no); // Fetch events by the user_no
-
-if ($stmt->execute()) {
-    $events_result = $stmt->get_result();
-} else {
-    // Add error handling to catch issues with the query
-    echo "Error fetching events: " . $stmt->error;
-}
-
-// Debug to check if events are being fetched
-if ($events_result->num_rows > 0) {
-    echo "Events fetched: " . $events_result->num_rows; // Temporary debug output
-} else {
-    echo "No events found for the user.";
-}
-
-$active = 'history';
 ?>
 
 <!DOCTYPE html>
