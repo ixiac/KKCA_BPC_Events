@@ -1,39 +1,80 @@
 <?php
-
 session_start();
 include("partial/db.php");
 
+// Ensure the user is logged in
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../index");
     exit;
-} else {
-    $sql = "SELECT * FROM customer WHERE CID = '" . $_SESSION['id'] . "'";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-    $user_id = $row["CID"];
+}
 
-    // Fetch events created by the logged-in user
-    $events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status FROM public_events WHERE event_by = ?";
-    $stmt = $conn->prepare($events_query);
-    $stmt->bind_param("i", $user_id); // Fetch events by the user_no
+// Check if `id` exists in session and fetch the user data
+if (isset($_SESSION['id'])) {
+    $sql = "SELECT * FROM customer WHERE CID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $_SESSION['id']);
 
     if ($stmt->execute()) {
-        $events_result = $stmt->get_result();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
     } else {
-        // Add error handling to catch issues with the query
-        echo "Error fetching events: " . $stmt->error;
+        echo "Error: " . $stmt->error;
     }
-
-    // Debug to check if events are being fetched
-    if ($events_result->num_rows > 0) {
-        echo "Events fetched: " . $events_result->num_rows; // Temporary debug output
-    } else {
-        echo "No events found for the user.";
-    }
-
-    $active = 'history';
 }
+
+// Function to get table name based on username
+function getTableByUsername($conn, $username)
+{
+    $tables = ["student", "admin", "church_mem", "staff", "customer"];
+    foreach ($tables as $table) {
+        $query = "SELECT * FROM $table WHERE username = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            return ["table" => $table, "user_id" => $row["CID"]]; // adjust field name for user ID in each table if needed
+        }
+    }
+    return null; // No matching user found
+}
+
+// Fetch events based on username
+function fetchUserEvents($conn, $username)
+{
+    $user_info = getTableByUsername($conn, $username);
+    if (!$user_info) {
+        echo "User not found.";
+        return;
+    }
+
+    $table = $user_info["table"];
+    $user_id = $user_info["user_id"];
+
+    // Query to fetch events by user_id
+    $events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status 
+                     FROM appointment 
+                     WHERE event_by = ?";
+    $stmt = $conn->prepare($events_query);
+    $stmt->bind_param("i", $user_id);
+
+    if ($stmt->execute()) {
+        return $stmt->get_result();
+    } else {
+        echo "Error fetching events: " . $stmt->error;
+        return null;
+    }
+}
+
+// Fetch events for the logged-in user
+$username = $_SESSION["username"]; // Ensure username is stored in session upon login
+$events_result = fetchUserEvents($conn, $username);
+
+$active = 'history';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -131,11 +172,11 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                                                         <td>₱<?php echo number_format($event['reg_fee'], 2); ?></td>
                                                                         <td>
                                                                             <?php
-                                                                            if ($event['status'] == 'completed') {
+                                                                            if ($event['status'] == '1') {
                                                                                 echo '<span class="badge badge-success" style="width: 80px;">Completed</span>';
-                                                                            } elseif ($event['status'] == 'pending') {
+                                                                            } elseif ($event['status'] == '0') {
                                                                                 echo '<span class="badge badge-warning" style="width: 80px;">Pending</span>';
-                                                                            } elseif ($event['status'] == 'cancelled') {
+                                                                            } elseif ($event['status'] == '3') {
                                                                                 echo '<span class="badge badge-danger" style="width: 80px;">Cancelled</span>';
                                                                             }
                                                                             ?>
