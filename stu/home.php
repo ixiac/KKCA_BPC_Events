@@ -5,17 +5,24 @@ include("partial/db.php");
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../index");
     exit;
-} else {
-    $sql = "SELECT * FROM student WHERE SID = '" . $_SESSION['id'] . "'";
-    $result = mysqli_query($conn, $sql);
-    $row = mysqli_fetch_assoc($result);
-    $user_id = $row["CID"];
+}
 
+// Check if `id` exists in session and fetch the user data
+if (isset($_SESSION['id'])) {
+    $sql = "SELECT * FROM student WHERE SID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $_SESSION['id']);
+
+        if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+    
     $active = "home";
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
