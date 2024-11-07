@@ -12,6 +12,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $user_id = $row["CID"];
 
     $active = 'home';
+    $currentMonth = date("F");
 }
 ?>
 
@@ -26,13 +27,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js"></script>
 
+    <link href="../assets/css/calendar.css" rel="stylesheet" />
+
 </head>
 
 <body>
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
 
-        <div class="main-panel overflow-y" style="height: 100%;">
+        <div class="main-panel">
 
             <div class="main-header" >
                 <div class="main-header-logo">
@@ -128,67 +131,40 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             <div class="card card-primary card-round">
                                 <div class="card-header">
                                     <div class="card-head-row">
-                                        <div class="card-title">Events this month</div>
+                                        <div class="card-title fs-2 ms-2">Available Events</div>
                                         <div class="card-tools">
-                                            <div class="dropdown">
-                                                <button
-                                                    class="btn btn-sm btn-label-light dropdown-toggle"
-                                                    type="button"
-                                                    id="dropdownMenuButton"
-                                                    data-bs-toggle="dropdown"
-                                                    aria-haspopup="true"
-                                                    aria-expanded="false">
-                                                    Your Events
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                                    <a class="dropdown-item active" href="#" onclick="updateDropdown('Your Events', this)">Your Events</a>
-                                                    <a class="dropdown-item" href="#" onclick="updateDropdown('Public', this)">Public Events</a>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
-                                    <div class="card-category">October</div>
+                                    <div class="card-category fs-3 ms-2"><?php echo $currentMonth?></div>
                                 </div>
                                 <div class="card-body pb-0">
                                     <div class="mb-4 mt-2" id="eventList">
-                                        <!-- Church events by default -->
-                                        <ul>
-                                            <li>Worship Services</li>
-                                            <li>Bible Study Sessions</li>
-                                            <li>Youth and Family Retreats</li>
-                                            <li>Community Outreach Programs</li>
-                                            <li>Special Holiday Services (Christmas, Easter, etc.)</li>
-                                            <li>Workshops and Seminars</li>
-                                            <li>Concerts and Music Events</li>
-                                            <li>Mission and Volunteer Opportunities</li>
-                                            <li>Prayer Meetings</li>
-                                            <li>Social Gatherings and Potlucks</li>
+                                        <ul class="fs-4 ms-4">
+                                            <li>Wedding</li>
+                                            <li>Baptism</li>
+                                            <li>Celebrations</li>
+                                            <li>Funerals</li>
+                                            <li>Community Outreach</li>
+                                            <li>Youth Fellowship</li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body align-items-center justify-content-between">
-                                <button class="btn card card-round justify-content-center" style="height: 105px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
+                                <button class="container-fluid btn card card-round justify-content-center" style="height: 100px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
                                     <div class="row card-body align-items-center justify-content-between">
-                                        <div class="col-10 mb-3 fs-3 d-flex align-items-center" style="height: 100%;">
+                                        <div class="col mb-3 fs-2 d-flex align-items-center" style="height: 100%;">
                                             <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
                                             <span>View Calendar</span>
                                         </div>
-                                        <div class="col-2 h3 d-flex align-items-center justify-content-center" style="height: 100%;">
-                                            <i class="bi bi-caret-right-fill"></i>
-                                        </div>
                                     </div>
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
+                <?php include("partial/footer.php"); ?>
             </div>
-            <?php include("partial/footer.php"); ?>
         </div>
-
     </div>
-
     <?php include("partial/script.php"); ?>
 
     <script>
