@@ -21,15 +21,20 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
 <head>
     <?php include("partial/head.php"); ?>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js"></script>
+
 </head>
 
 <body>
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
 
-        <div class="main-panel">
+        <div class="main-panel overflow-y" style="height: 100%;">
 
-            <div class="main-header">
+            <div class="main-header" >
                 <div class="main-header-logo">
                     <!-- Logo Header -->
                     <div class="logo-header" data-background-color="dark">
@@ -56,7 +61,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
-            <div class="container overflow-hidden" style="background-color: #dbdde0 !important;">
+            <div class="container" style="background-color: #dbdde0 !important; height: 250px !important;">
                 <div class="page-inner">
                     <div
                         class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -64,6 +69,24 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             <h3 class="fw-bold mb-3">Home Page</h3>
                         </div>
                     </div>
+
+                    <!-- Calendar Modal -->
+                    <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="calendarModalLabel">Event Calendar</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="scroll overflow-y-scroll p-2">
+                                        <div id="calendar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-8">
                             <div class="card card-round">
@@ -115,7 +138,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                                     data-bs-toggle="dropdown"
                                                     aria-haspopup="true"
                                                     aria-expanded="false">
-                                                    Church
+                                                    Your Events
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                                     <a class="dropdown-item active" href="#" onclick="updateDropdown('Your Events', this)">Your Events</a>
@@ -144,28 +167,56 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                     </div>
                                 </div>
                             </div>
-                            <div class="card card-round justify-content-center" style="height: 105px;">
-                                <div class="row card-body align-items-center justify-content-between">
-                                    <div class="col-10 mb-3 fs-3 d-flex align-items-center" style="height: 100%;">
-                                        <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
-                                        <span>View Calendar</span>
+                            <div class="card-body align-items-center justify-content-between">
+                                <button class="btn card card-round justify-content-center" style="height: 105px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
+                                    <div class="row card-body align-items-center justify-content-between">
+                                        <div class="col-10 mb-3 fs-3 d-flex align-items-center" style="height: 100%;">
+                                            <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
+                                            <span>View Calendar</span>
+                                        </div>
+                                        <div class="col-2 h3 d-flex align-items-center justify-content-center" style="height: 100%;">
+                                            <i class="bi bi-caret-right-fill"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-2 h3 d-flex align-items-center justify-content-center" style="height: 100%;">
-                                        <i class="bi bi-caret-right-fill"></i>
-                                    </div>
-                                </div>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
-
         </div>
 
     </div>
 
     <?php include("partial/script.php"); ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: {
+                    url: 'modal/calendar.php',
+                    method: 'GET',
+                    failure: function() {
+                        alert('Failed to load events!');
+                    },
+                    success: function(data) {
+                        console.log("Loaded events:", data);
+                    }
+                },
+                eventColor: '#00A33C',
+                locale: 'en'
+            });
+
+            // Initialize calendar when the modal is shown
+            $('#calendarModal').on('shown.bs.modal', function() {
+                calendar.render();
+            });
+        });
+    </script>
+
 </body>
 
 </html>
