@@ -1,6 +1,6 @@
-<footer class="footer overflow-hidden">
-    <div class="container-fluid d-flex">
-    <iconify-icon icon="material-symbols:church" width="2.5em" height="2em" style="margin-right: 1em;"></iconify-icon>
+<footer class="footer">
+    <div class="container-fluid">
+    <iconify-icon icon="material-symbols:church" width="2.5em" height="1.5em" style="margin-right: 1em;"></iconify-icon>
         <div class="copyright">
         <b>Batangas Presbyterian Church was founded in
                 1991. As a family,
