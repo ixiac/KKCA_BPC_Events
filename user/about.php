@@ -91,13 +91,12 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         <div class="col-7 col-md-8">
                                             <div class="tab-content" id="v-pills-with-icon-tabContent">
                                                 <div class="tab-pane fade active show" id="v-pills-home-icons" role="tabpanel" aria-labelledby="v-pills-home-tab-icons">
-                                                    <p class="fs-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-
-                                                    <p class="fs-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth.</p>
+                                                    <p class="fs-4">Batangas Presbyterian Church (BPC), founded in 1991, is a vibrant and growing community of faith. As a family, BPC warmly welcomes everyone to experience the love of Christ and join in expanding God's horizon through worship, service, and fellowship. With a strong commitment to spiritual growth, outreach, and serving the community.</p>
+                                                    <p class="fs-4">BPC invites all to join us in worship, fellowship, and outreach, making a meaningful difference in our local community and beyond.</p>
                                                 </div>
                                                 <div class="tab-pane fade" id="v-pills-profile-icons" role="tabpanel" aria-labelledby="v-pills-profile-tab-icons">
-                                                    <p class="fs-4">Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-                                                    <p class="fs-4">The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way.
+                                                    <p class="fs-4">KKCA, providing education from Pre-Elem to Grade 12, is committed to academic excellence and holistic development. Affiliated with DECS, BI, and PCSN, KKCA offers a nurturing environment where faith and education are integrated.</p>
+                                                    <p class="fs-4">As part of the Batangas Presbyterian Church (BPC), KKCA fosters a strong connection between faith and education, empowering students to become responsible and compassionate individuals who contribute to the community and beyond.
                                                     </p>
                                                 </div>
                                             </div>
@@ -108,7 +107,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         </div>
                         <div class="col-md-6">
                             <div class="card card-post card-round">
-                                <img class="card-img-top" src="../assets/img/bpc-cover.jpg" alt="Card image cap" id="card-img" height="326px">
+                                <img class="card-img-top" src="../assets/img/bpc-cover.jpg" alt="Card image cap" id="card-img" height="328px">
                                 <div class="card-body" id="card-body">
                                     <div class="d-flex">
                                         <div class="avatar">
