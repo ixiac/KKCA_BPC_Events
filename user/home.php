@@ -37,7 +37,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
         <div class="main-panel">
 
-            <div class="main-header" >
+            <div class="main-header">
                 <div class="main-header-logo">
                     <!-- Logo Header -->
                     <div class="logo-header" data-background-color="dark">
@@ -64,7 +64,8 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
-            <div class="container" style="background-color: #dbdde0 !important; height: 250px !important;">
+            <div class="container" style="background-color: #dbdde0 !important;">
+                <div class="background-overlay"></div>
                 <div class="page-inner">
                     <div
                         class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -93,16 +94,62 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <div class="row">
                         <div class="col-md-8">
                             <div class="card card-round">
+                                <div class="background-overlay2"></div>
+                                <div class="img-shadow"></div>
+                                <style>
+                                    .background-overlay {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        background-image: url('../assets/img/login-BG.png');
+                                        background-size: cover;
+                                        background-position: right;
+                                        opacity: 0.2;
+                                        border-radius: 10px;
+                                    }
+
+                                    .background-overlay2 {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        background-image: url('../assets/img/libag.png');
+                                        background-position: right center;
+                                        background-repeat: no-repeat;
+                                        /* opacity: 0.1; */
+                                        border-radius: 10px;
+                                    }
+
+                                    .img-shadow {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        background-image: url('../assets/img/img-shadow.png');
+                                        background-position: bottom;
+                                        /* opacity: 0.1; */
+                                        border-radius: 10px;
+                                        z-index: 1;
+                                    }
+
+                                    .card-body {
+                                        z-index: 2;
+                                    }
+                                </style>
                                 <div class="card-body">
-                                    <div class="row chart-container align-items-center" style="min-height: 447px">
+                                    <div class="row chart-container align-items-center" style="height: 447px">
                                         <div class="row book-card align-items-center">
                                             <div class="row align-items-center">
                                                 <div class="col-md-7 row mb-5" style="padding-left: 40px;">
                                                     <h1 style="font-size: 3.5rem"><b>BOOK YOUR EVENTS NOW!</b></h1>
                                                     <h6>Book your events now! Secure your date and venue for unforgettable moments.
                                                         Don’t miss out—let’s make it happen!</h6>
-                                                    <form action="appointment.php" class="me-3">
-                                                        <button class="btn btn-success aptn-btn mt-3" style="width: 400px;">Make an Appointment</button>
+                                                    <form action="appointment.php">
+                                                        <button class="btn btn-success aptn-btn mt-3">Make an Appointment</button>
                                                     </form>
                                                     <style>
                                                         .aptn-btn {
@@ -110,16 +157,15 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                                             height: 5rem;
                                                             margin-bottom: -80px;
                                                             font-size: 1.5rem;
-                                                            width: 500px;
+                                                            width: 30rem;
                                                             border-radius: 10px;
-                                                            margin-left: 12px;
                                                         }
                                                     </style>
                                                 </div>
-                                                <div class="col-md-5 mt-4">
+                                                <!-- <div class="col-md-5 mt-4">
                                                     <img src="../assets/img/event-img.png" alt="events" class="img-fluid"
-                                                        style="margin-left: 50px; width: 850px; height: 300px;">
-                                                </div>
+                                                        >
+                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
@@ -135,7 +181,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         <div class="card-tools">
                                         </div>
                                     </div>
-                                    <div class="card-category fs-3 ms-2"><?php echo $currentMonth?></div>
+                                    <div class="card-category fs-3 ms-2"><?php echo $currentMonth ?></div>
                                 </div>
                                 <div class="card-body pb-0">
                                     <div class="mb-4 mt-2" id="eventList">
@@ -150,20 +196,20 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                     </div>
                                 </div>
                             </div>
-                                <button class="container-fluid btn card card-round justify-content-center" style="height: 100px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
-                                    <div class="row card-body align-items-center justify-content-between">
-                                        <div class="col mb-3 fs-2 d-flex align-items-center" style="height: 100%;">
-                                            <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
-                                            <span>View Calendar</span>
-                                        </div>
+                            <button class="container-fluid btn card card-round justify-content-center" style="height: 100px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
+                                <div class="row card-body align-items-center justify-content-between">
+                                    <div class="col mb-3 fs-2 d-flex align-items-center" style="height: 100%;">
+                                        <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
+                                        <span>View Public Calendar</span>
                                     </div>
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
-                <?php include("partial/footer.php"); ?>
             </div>
+            <?php include("partial/footer.php"); ?>
         </div>
+    </div>
     </div>
     <?php include("partial/script.php"); ?>
 
@@ -186,7 +232,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 locale: 'en'
             });
 
-            // Initialize calendar when the modal is shown
             $('#calendarModal').on('shown.bs.modal', function() {
                 calendar.render();
             });
