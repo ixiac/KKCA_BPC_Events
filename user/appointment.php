@@ -89,9 +89,12 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         <div class="col-md-6 form-group">
                                             <label for="categorySelect">Category</label>
                                             <select class="form-select" id="category-select">
-                                                <option>Bible Study Session</option>
                                                 <option>Wedding</option>
-                                                <option>Birthday Celebration</option>
+                                                <option>Baptism</option>
+                                                <option>Celebrations</option>
+                                                <option>Funerals</option>
+                                                <option>Community Outreach</option>
+                                                <option>Youth Fellowship</option>
                                             </select>
                                         </div>
                                         <div class="col-md-6 form-group">
@@ -110,7 +113,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                             <div class="row">
                                                 <label for="startDate">Start Date</label>
                                                 <div class="input-group mb-3">
-                                                    <input type="date" class="form-control" placeholder="Start Date">
+                                                    <input type="datetime-local" class="form-control" placeholder="Start Date">
                                                 </div>
                                             </div>
                                         </div>
@@ -118,7 +121,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                             <div class="row">
                                                 <label for="endDate">End Date</label>
                                                 <div class="input-group mb-3">
-                                                    <input type="date" class="form-control" placeholder="End Date">
+                                                    <input type="datetime-local" class="form-control" placeholder="End Date">
                                                 </div>
                                             </div>
                                         </div>
