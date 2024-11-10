@@ -18,9 +18,9 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $result = $stmt->get_result();
     $count1 = $result->fetch_assoc();
 
-    $countq1 = "SELECT COUNT(*) AS completed_appointments FROM appointment WHERE event_by = ? AND status = 2";
-    $stmt = $conn->prepare($countq1);
-    $stmt->bind_param("s", $user_id);
+    $countq2 = "SELECT COUNT(*) AS completed_appointments FROM appointment WHERE event_by = ? AND status = 2";
+    $stmt = $conn->prepare($countq2);
+    $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();
     $count2 = $result->fetch_assoc();
