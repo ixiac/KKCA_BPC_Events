@@ -31,8 +31,12 @@
 <!-- Kaiadmin JS -->
 <script src="../assets/js/kaiadmin.min.js"></script>
 
+<script src="../assets/js/about.js"></script>
+
+
 <!-- Kaiadmin DEMO methods, don't include it in your project! -->
 <script src="../assets/js/setting-demo.js"></script>
 <script src="../assets/js/demo.js"></script>
 
 <script src="../assets/js/av-events-dropdown.js"></script>
+
