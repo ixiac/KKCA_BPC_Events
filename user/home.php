@@ -43,7 +43,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     <div class="logo-header" data-background-color="dark">
                         <a href="home" class="logo">
                             <img
-                                src="assets/img/kaiadmin/logo_light.svg"
+                                src="assets/img/BPC-logo.png"
                                 alt="navbar brand"
                                 class="navbar-brand"
                                 height="20" />
@@ -65,7 +65,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 <?php include("partial/navbar.php"); ?>
             </div>
             <div class="container" style="background-color: #dbdde0 !important;">
-                <div class="background-overlay"></div>
                 <div class="page-inner">
                     <div
                         class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
@@ -95,21 +94,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         <div class="col-md-8">
                             <div class="card card-round">
                                 <div class="background-overlay2"></div>
-                                <div class="img-shadow"></div>
                                 <style>
-                                    .background-overlay {
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 100%;
-                                        height: 100%;
-                                        background-image: url('../assets/img/login-BG.png');
-                                        background-size: cover;
-                                        background-position: right;
-                                        opacity: 0.2;
-                                        border-radius: 10px;
-                                    }
-
                                     .background-overlay2 {
                                         position: absolute;
                                         top: 0;
@@ -122,54 +107,34 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         /* opacity: 0.1; */
                                         border-radius: 10px;
                                     }
-
-                                    .img-shadow {
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 100%;
-                                        height: 100%;
-                                        background-image: url('../assets/img/img-shadow.png');
-                                        background-position: bottom;
-                                        /* opacity: 0.1; */
-                                        border-radius: 10px;
-                                        z-index: 1;
-                                    }
-
-                                    .card-body {
-                                        z-index: 2;
-                                    }
                                 </style>
+
                                 <div class="card-body">
                                     <div class="row chart-container align-items-center" style="height: 447px">
                                         <div class="row book-card align-items-center">
                                             <div class="row align-items-center">
                                                 <div class="col-md-7 row mb-5" style="padding-left: 40px;">
-                                                    <h1 style="font-size: 3.5rem"><b>BOOK YOUR EVENTS NOW!</b></h1>
+                                                    <h1 class="fs-1"><b>BOOK YOUR EVENTS NOW!</b></h1>
                                                     <h6>Book your events now! Secure your date and venue for unforgettable moments.
                                                         Don’t miss out—let’s make it happen!</h6>
                                                     <form action="appointment.php">
-                                                        <button class="btn btn-success aptn-btn mt-3">Make an Appointment</button>
+                                                        <button class="btn aptn-btn mt-3">Make an Appointment</button>
                                                     </form>
                                                     <style>
                                                         .aptn-btn {
                                                             background-color: #00A33C !important;
+                                                            color: white;
                                                             height: 5rem;
                                                             margin-bottom: -80px;
                                                             font-size: 1.5rem;
-                                                            width: 30rem;
+                                                            width: 100%;
                                                             border-radius: 10px;
                                                         }
                                                     </style>
                                                 </div>
-                                                <!-- <div class="col-md-5 mt-4">
-                                                    <img src="../assets/img/event-img.png" alt="events" class="img-fluid"
-                                                        >
-                                                </div> -->
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="myChartLegend"></div>
                                 </div>
                             </div>
                         </div>
