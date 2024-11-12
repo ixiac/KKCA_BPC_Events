@@ -21,7 +21,11 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <html lang="en">
 
 <head>
+
     <?php include("partial/head.php"); ?>
+
+    <link href="../assets/css/pagebg.css" rel="stylesheet" />
+
 </head>
 
 <body>
@@ -58,6 +62,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             </div>
 
             <div class="container" style="background-color: #dbdde0 !important;">
+            <div class="background-overlay"></div>
                 <div class="page-inner">
                     <div class="row">
                         <div class="col me-2 d-flex pt-2 pb-4">
@@ -127,7 +132,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         As a family, we are a growing church. BPC welcomes
                                         everyone to join us in expanding God's Horizon.
                                     </p>
-                                    <a href="#" class="btn btn-rounded btn-sm" style="background-color: #203b70; color: #fff;">View Page</a>
+                                    <a href="https://www.facebook.com/profile.php?id=100064518527125" target="_blank" class="btn btn-rounded btn-sm" style="background-color: #203b70; color: #fff;">View Page</a>
                                 </div>
                             </div>
                         </div>
@@ -151,25 +156,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     </div>
 
     <?php include("partial/script.php"); ?>
-
-    <script>
-        document.getElementById("v-pills-profile-tab-icons").addEventListener("click", function() {
-            document.getElementById("card-img").src = "../assets/img/kkca-cover.jpg";
-            document.getElementById("avatar-img").src = "../assets/img/KKCA-logo.png";
-            document.getElementById("username").innerText = "King's Kids Christian Academy ";
-            document.getElementById("category").innerText = "Private School";
-            document.getElementById("card-title").innerText = "Intro";
-            document.getElementById("card-text").innerText = "KKCA was established to provide an educational experience for Pre-Elem up to G-12, DECS, BI, PCSN.";
-        });
-        document.getElementById("v-pills-home-tab-icons").addEventListener("click", function() {
-            document.getElementById("card-img").src = "../assets/img/bpc-cover.jpg";
-            document.getElementById("avatar-img").src = "../assets/img/BPC-logo.png";
-            document.getElementById("username").innerText = "Batangas Presbyterian Church";
-            document.getElementById("category").innerText = "Community";
-            document.getElementById("card-title").innerText = "Intro";
-            document.getElementById("card-text").innerText = "Batangas Presbyterian Church was founded in 1991, As a family, we are a growing church. BPC welcomes everyone to join us in expanding God 's Horizon.";
-        });
-    </script>
 </body>
 
 </html>
