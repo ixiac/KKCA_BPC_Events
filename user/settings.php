@@ -35,6 +35,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <head>
     <?php include("partial/head.php"); ?>
 
+
     <style>
         input:focus,
         textarea:focus,

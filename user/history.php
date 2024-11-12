@@ -8,7 +8,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     exit;
 }
 
-// Check if `id` exists in session and fetch the user data
 if (isset($_SESSION['id'])) {
     $sql = "SELECT * FROM customer WHERE CID = ?";
     $stmt = $conn->prepare($sql);
@@ -22,7 +21,6 @@ if (isset($_SESSION['id'])) {
     }
 }
 
-// Function to get table name based on username
 function getTableByUsername($conn, $username)
 {
     $tables = ["student", "admin", "church_mem", "staff", "customer"];
@@ -35,13 +33,12 @@ function getTableByUsername($conn, $username)
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            return ["table" => $table, "user_id" => $row["CID"]]; // adjust field name for user ID in each table if needed
+            return ["table" => $table, "user_id" => $row["CID"]];
         }
     }
-    return null; // No matching user found
+    return null;
 }
 
-// Fetch events based on username
 function fetchUserEvents($conn, $username)
 {
     $user_info = getTableByUsername($conn, $username);
@@ -53,7 +50,6 @@ function fetchUserEvents($conn, $username)
     $table = $user_info["table"];
     $user_id = $user_info["user_id"];
 
-    // Query to fetch events by user_id
     $events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status 
                      FROM appointment 
                      WHERE event_by = ?";
@@ -68,8 +64,7 @@ function fetchUserEvents($conn, $username)
     }
 }
 
-// Fetch events for the logged-in user
-$username = $_SESSION["username"]; // Ensure username is stored in session upon login
+$username = $_SESSION["username"];
 $events_result = fetchUserEvents($conn, $username);
 
 $active = 'history';
@@ -80,7 +75,9 @@ $active = 'history';
 <html lang="en">
 
 <head>
+
     <?php include("partial/head.php"); ?>
+
 </head>
 
 <body>
