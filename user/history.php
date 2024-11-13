@@ -93,6 +93,8 @@ $active = 'history';
 
     <?php include("partial/head.php"); ?>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
@@ -136,6 +138,27 @@ $active = 'history';
 </head>
 
 <body>
+
+    <?php
+    if (isset($_SESSION['swal_message'])) {
+        $swalType = $_SESSION['swal_message']['type'];
+        $swalTitle = $_SESSION['swal_message']['title'];
+        $swalMessage = isset($_SESSION['swal_message']['message']) ? $_SESSION['swal_message']['message'] : '';
+
+        echo "<script>
+                Swal.fire({
+                    icon: '$swalType',
+                    title: '$swalTitle',
+                    text: '$swalMessage',
+                    confirmButtonColor: '#00A33C',
+                    confirmButtonText: 'OK'
+                });
+            </script>";
+
+        unset($_SESSION['swal_message']);
+    }
+    ?>
+
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
 
@@ -166,6 +189,56 @@ $active = 'history';
                     <!-- End Logo Header -->
                 </div>
                 <?php include("partial/navbar.php"); ?>
+            </div>
+
+            <!-- Edit Event Modal -->
+            <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editEventForm" method="POST" action="modal/edit_events.php">
+                                <input type="hidden" name="APID" id="editEventId">
+                                <div class="mb-3">
+                                    <label for="editEventName" class="form-label">Event Name</label>
+                                    <input type="text" class="form-control" id="editEventName" name="event_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCategory" class="form-label">Category</label>
+                                    <select name="category" class="form-control" id="editCategory">
+                                        <option>Wedding</option>
+                                        <option>Baptism</option>
+                                        <option>Celebrations</option>
+                                        <option>Funerals</option>
+                                        <option>Community Outreach</option>
+                                        <option>Youth Fellowship</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editStartDate" class="form-label">Start Date</label>
+                                    <input type="datetime-local" class="form-control" id="editStartDate" name="start_date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editEndDate" class="form-label">End Date</label>
+                                    <input type="datetime-local" class="form-control" id="editEndDate" name="end_date" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editVenue" class="form-label">Venue</label>
+                                    <select name="venue" class="form-control" id="editVenue">
+                                        <option>BPC Chapel</option>
+                                        <option>BPC Open Area</option>
+                                    </select>
+                                </div>
+                                <div class="row justify-content-center mt-5 mb-3">
+                                    <button type="submit" class="btn fs-6" style="width: 30%; color: white; background-color: #00A33C; border-radius: 6px">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="container" style="background-color: #dbdde0 !important;">
@@ -219,12 +292,12 @@ $active = 'history';
                                                                         <th>Start Date</th>
                                                                         <th>End Date</th>
                                                                         <th>Venue</th>
-                                                                        <th>Reg. Fee</th>
                                                                         <th>Status</th>
+                                                                        <th>Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tfoot>
-                                                                    <th colspan="6"></th>
+                                                                    <th colspan="5"></th>
                                                                     <th rowspan="1" colspan="1">
                                                                         <select class="form-select" id="status-filter">
                                                                             <option value=""></option>
@@ -244,17 +317,37 @@ $active = 'history';
                                                                             <td><?php echo $event['start_date']; ?></td>
                                                                             <td><?php echo $event['end_date']; ?></td>
                                                                             <td><?php echo $event['venue']; ?></td>
-                                                                            <td>₱<?php echo number_format($event['reg_fee'], 2); ?></td>
                                                                             <td>
                                                                                 <?php
-                                                                                if ($event['status'] == '1') {
-                                                                                    echo '<span class="badge badge-success">Completed</span>';
-                                                                                } elseif ($event['status'] == '0') {
-                                                                                    echo '<span class="badge badge-warning">Pending</span>';
+                                                                                if ($event['status'] == '0') {
+                                                                                    echo '<span class="badge badge-warning ms-1" style="width: 60%">Pending</span>';
+                                                                                } elseif ($event['status'] == '1') {
+                                                                                    echo '<span class="badge badge-warning ms-1" style="width: 60%">Approved</span>';
+                                                                                } elseif ($event['status'] == '2') {
+                                                                                    echo '<span class="badge badge-danger ms-1" style="width: 60%">Ongoing</span>';
                                                                                 } elseif ($event['status'] == '3') {
-                                                                                    echo '<span class="badge badge-danger">Cancelled</span>';
+                                                                                    echo '<span class="badge badge-success ms-1" style="width: 60%">Completed</span>';
+                                                                                } elseif ($event['status'] == '4') {
+                                                                                    echo '<span class="badge badge-danger ms-1" style="width: 60%">Cancelled</span>';
                                                                                 }
                                                                                 ?>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="form-button-action">
+                                                                                    <button type="button" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
+                                                                                        '<?php echo htmlspecialchars($event['APID']); ?>',
+                                                                                        '<?php echo htmlspecialchars($event['event_name']); ?>',
+                                                                                        '<?php echo htmlspecialchars($event['category']); ?>',
+                                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
+                                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
+                                                                                        '<?php echo htmlspecialchars($event['venue']); ?>',
+                                                                                        )">
+                                                                                        <i class="fa fa-edit"></i>
+                                                                                    </button>
+                                                                                    <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                                                        <i class="fa fa-times"></i>
+                                                                                    </button>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
                                                                     <?php } ?>
@@ -342,6 +435,18 @@ $active = 'history';
 
             document.getElementById('no-events-row').style.display = hasVisibleRow ? 'none' : '';
         });
+
+        function openEditModal(APID, eventName, category, startDate, endDate, venue, status) {
+            document.getElementById('editEventId').value = APID;
+            document.getElementById('editEventName').value = eventName;
+            document.getElementById('editCategory').value = category;
+            document.getElementById('editStartDate').value = startDate;
+            document.getElementById('editEndDate').value = endDate;
+            document.getElementById('editVenue').value = venue;
+
+            var editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
+            editEventModal.show();
+        }
     </script>
 </body>
 
