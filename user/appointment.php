@@ -42,11 +42,31 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
         }
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
 <body>
+
+    <?php
+    if (isset($_SESSION['swal_message'])) {
+        $swalType = $_SESSION['swal_message']['type'];
+        $swalTitle = $_SESSION['swal_message']['title'];
+
+        echo "<script>
+            Swal.fire({
+                title: '$swalTitle',
+                confirmButtonText: 'OK'
+            });
+        </script>";
+
+        unset($_SESSION['swal_message']);
+    }
+    ?>
+
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
         <div class="main-panel">
@@ -108,7 +128,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         <div class="row px-3 pb-3">
                                             <div class="col-md-6 form-group">
                                                 <label for="categorySelect">Category</label>
-                                                <select class="form-select" id="category-select" name="category">
+                                                <select class="form-select" id="category-select" name="category" onchange="updateDownPayment()">
                                                     <option>Wedding</option>
                                                     <option>Baptism</option>
                                                     <option>Celebrations</option>
@@ -140,7 +160,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                             <div class="col-md-4 form-group">
                                                 <label for="regFee">Registration Fee</label>
                                                 <input type="number" class="form-control" id="registration-fee" name="reg_fee" placeholder="Registration Fee">
-                                                <small id="minFeeText" class="form-text text-muted ps-2">Prices may vary</small>
+                                                <small id="down-payment-text" class="form-text text-muted ps-2">Down Payment: ₱5,000 - ₱15,000</small>
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label for="ref_no">Reference No.</label>
@@ -163,10 +183,20 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             <div id="appointmentCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
                                 <div class="carousel-inner" style="border-radius: 10px">
                                     <div class="carousel-item active">
-                                        <img src="uploads/672fe1be7c1cf-Screenshot 2024-10-02 220619.png" class="img-fluid d-block w-100" alt="Image 1">
+                                        <img src="venue/venue_1.jpg" class="d-block w-100" alt="Image 1">
+                                        <div class="text-center">BPC Chapel Figure 1</div>
                                     </div>
                                     <div class="carousel-item">
-                                        <img src="uploads/672fdf9e6ba38-Screenshot 2024-09-16 152721.png" class="img-fluid d-block w-100" alt="Image 2">
+                                        <img src="venue/venue_2.jpg" class="d-block w-100" alt="Image 2">
+                                        <div class="text-center">BPC Chapel Figure 2</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="venue/venue_3.jpg" class="d-block w-100" alt="Image 2">
+                                        <div class="text-center">BPC Open Court Figure 1</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="venue/venue_4.jpg" class="d-block w-100" alt="Image 2">
+                                        <div class="text-center">BPC Open Court Figure 2</div>
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#appointmentCarousel" data-bs-slide="prev">
@@ -293,6 +323,38 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <?php include("partial/script.php"); ?>
 
     <script>
+        function updateDownPayment() {
+            const category = document.getElementById("category-select").value;
+            const downPaymentText = document.getElementById("down-payment-text");
+
+            let downPayment;
+
+            switch (category) {
+                case "Wedding":
+                    downPayment = "₱5,000 - ₱15,000";
+                    break;
+                case "Baptism":
+                    downPayment = "₱500 - ₱3,000";
+                    break;
+                case "Celebrations":
+                    downPayment = "₱2,000 - ₱10,000";
+                    break;
+                case "Funerals":
+                    downPayment = "₱3,000 - ₱10,000";
+                    break;
+                case "Community Outreach":
+                    downPayment = "₱2,000 - ₱5,000";
+                    break;
+                case "Youth Fellowship":
+                    downPayment = "₱1,000 - ₱5,000";
+                    break;
+                default:
+                    downPayment = "Please select a category";
+                    break;
+            }
+            downPaymentText.textContent = `Down payment: ${downPayment}`;
+        }
+
         const unavailableDates = <?php echo json_encode($unavailableDates); ?>;
 
         function disableUnavailableDates() {
@@ -356,7 +418,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     showCancelButton: true,
                     confirmButtonColor: '#00A33C',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, submit it!'
+                    confirmButtonText: 'Submit'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         document.getElementById('appointmentForm').submit();

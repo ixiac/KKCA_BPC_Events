@@ -11,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reg_fee = isset($_POST['reg_fee']) ? $_POST['reg_fee'] : null;
     $ref_no = isset($_POST['ref_no']) ? $_POST['ref_no'] : null;
 
-    // Handle file upload
     if (isset($_FILES['ref_img']) && $_FILES['ref_img']['error'] == UPLOAD_ERR_OK) {
         $uploads_dir = '../uploads/';
         $filename = basename($_FILES['ref_img']['name']);
@@ -27,23 +26,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $ref_img = null;
     }
 
+    switch ($category) {
+        case "Wedding":
+            $exp_cost = 15000;
+            break;
+        case "Baptism":
+            $exp_cost = 3000;
+            break;
+        case "Celebrations":
+            $exp_cost = 10000;
+            break;
+        case "Funerals":
+            $exp_cost = 10000;
+            break;
+        case "Community Outreach":
+            $exp_cost = 5000;
+            break;
+        case "Youth Fellowship":
+            $exp_cost = 5000;
+            break;
+        default:
+            $exp_cost = 0;
+            break;
+    }
+
     if ($event_name && $category && $start_date && $end_date && $venue && $reg_fee && $ref_no) {
-        $sql = "INSERT INTO appointment (event_name, event_by, category, start_date, end_date, venue, reg_fee, ref_no, ref_img) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO appointment (event_name, event_by, category, start_date, end_date, venue, reg_fee, ref_no, ref_img, exp_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssiss", $event_name, $_SESSION['id'], $category, $start_date, $end_date, $venue, $reg_fee, $ref_no, $ref_img);
+        $stmt->bind_param("ssssssisss", $event_name, $_SESSION['id'], $category, $start_date, $end_date, $venue, $reg_fee, $ref_no, $ref_img, $exp_cost);
 
         if ($stmt->execute()) {
-            echo "<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>";
-            echo "<script>
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: 'Please wait for your event appointment to be approved.',
-                        confirmButtonColor: '#00A33C'
-                    }).then(() => {
-                        window.location.href = 'history.php';
-                    });
-                  </script>";
+            $_SESSION['swal_message'] = [
+                'type' => 'success',
+                'title' => 'Success!',
+                'message' => 'Your appointment has been successfully submitted.'
+            ];
+
+            header("Location: ../appointment.php");
         } else {
             echo "Error: " . $stmt->error;
         }
