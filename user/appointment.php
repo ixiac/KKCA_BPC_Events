@@ -101,14 +101,14 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                     <form id="appointmentForm" action="modal/submit_appointment.php" method="POST" enctype="multipart/form-data">
                                         <div class="row px-3 pb-3">
                                             <div class="col-md-6 form-group">
-                                                <label for="fname">Event Name</label>
-                                                <input type="text" class="form-control" id="fname" placeholder="Name your Event">
+                                                <label for="event_name">Event Name</label>
+                                                <input type="text" class="form-control" id="event_name" name="event_name" placeholder="Name your Event">
                                             </div>
                                         </div>
                                         <div class="row px-3 pb-3">
                                             <div class="col-md-6 form-group">
                                                 <label for="categorySelect">Category</label>
-                                                <select class="form-select" id="category-select">
+                                                <select class="form-select" id="category-select" name="category">
                                                     <option>Wedding</option>
                                                     <option>Baptism</option>
                                                     <option>Celebrations</option>
@@ -119,44 +119,36 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                             </div>
                                             <div class="col-md-6 form-group">
                                                 <label for="venueSelect">Venue</label>
-                                                <select class="form-select" id="venue-select">
-                                                    <option>Bay City Mall</option>
-                                                    <option>Malitam University</option>
+                                                <select class="form-select" id="venue-select" name="venue">
+                                                    <option>BPC Chapel</option>
+                                                    <option>BPC Open Area</option>
                                                     <option>Malitam Brgy. Hall</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="row px-3 pb-3">
                                             <div class="col-md-6 form-group">
-                                                <div class="row">
-                                                    <label for="start_date">Start Date</label>
-                                                    <div class="input-group mb-3">
-                                                        <input type="datetime-local" class="form-control" id="start_date" placeholder="Start Date" onchange="setEndDateMin()">
-                                                    </div>
-                                                </div>
+                                                <label for="start_date">Start Date</label>
+                                                <input type="datetime-local" class="form-control" id="start_date" name="start_date" onchange="setEndDateMin()">
                                             </div>
                                             <div class="col-md-6 form-group">
-                                                <div class="row">
-                                                    <label for="end_date">End Date</label>
-                                                    <div class="input-group mb-3">
-                                                        <input type="datetime-local" class="form-control" id="end_date" placeholder="End Date">
-                                                    </div>
-                                                </div>
+                                                <label for="end_date">End Date</label>
+                                                <input type="datetime-local" class="form-control" id="end_date" name="end_date">
                                             </div>
                                         </div>
                                         <div class="row px-3 pb-3">
                                             <div class="col-md-4 form-group">
                                                 <label for="regFee">Registration Fee</label>
-                                                <input type="number" class="form-control" id="registration-fee" placeholder="Registration Fee">
+                                                <input type="number" class="form-control" id="registration-fee" name="reg_fee" placeholder="Registration Fee">
                                                 <small id="minFeeText" class="form-text text-muted ps-2">Prices may vary</small>
                                             </div>
                                             <div class="col-md-4 form-group">
-                                                <label for="regFee">Reference No.</label>
-                                                <input type="number" class="form-control" id="registration-fee" placeholder="Registration Fee">
+                                                <label for="ref_no">Reference No.</label>
+                                                <input type="number" class="form-control" id="reference-no" name="ref_no" placeholder="Reference No.">
                                             </div>
                                             <div class="col-md-4 form-group">
                                                 <label for="exampleFormControlFile1">Reference Image</label>
-                                                <input type="file" class="form-control-file mt-2" id="exampleFormControlFile1">
+                                                <input type="file" class="form-control-file mt-2" id="exampleFormControlFile1" name="ref_img">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center mx-2 mt-3">
@@ -301,7 +293,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <?php include("partial/script.php"); ?>
 
     <script>
-        // Pass unavailableDates PHP array to JavaScript
         const unavailableDates = <?php echo json_encode($unavailableDates); ?>;
 
         function disableUnavailableDates() {
@@ -312,7 +303,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                 const start = new Date(range.start_date);
                 const end = new Date(range.end_date);
 
-                // Disable dates in start_date and end_date
                 startDateInput.addEventListener("input", () => {
                     const selectedDate = new Date(startDateInput.value);
                     if (selectedDate >= start && selectedDate <= end) {
@@ -331,31 +321,48 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             });
         }
 
-        // Initialize on page load
         disableUnavailableDates();
 
         function setEndDateMin() {
             const startDateInput = document.getElementById("start_date");
             const endDateInput = document.getElementById("end_date");
 
-            // Set the minimum date and time for end_date to the selected start_date
             endDateInput.min = startDateInput.value;
         }
 
         function confirmSubmission() {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to submit this appointment?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, submit it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('appointmentForm').submit();
-                }
-            });
+            // Get all input fields
+            const eventName = document.getElementById('event_name').value.trim();
+            const category = document.getElementById('category-select').value.trim();
+            const venue = document.getElementById('venue-select').value.trim();
+            const startDate = document.getElementById('start_date').value.trim();
+            const endDate = document.getElementById('end_date').value.trim();
+            const regFee = document.getElementById('registration-fee').value.trim();
+            const refNo = document.getElementById('reference-no').value.trim();
+            const refImg = document.getElementById('exampleFormControlFile1').value.trim();
+
+            if (!eventName || !category || !venue || !startDate || !endDate || !regFee || !refNo || !refImg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Information',
+                    text: 'Please fill in all fields before submitting.',
+                    confirmButtonColor: '#d33'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to submit this appointment?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#00A33C',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, submit it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('appointmentForm').submit();
+                    }
+                });
+            }
         }
     </script>
 
