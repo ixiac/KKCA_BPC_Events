@@ -85,6 +85,7 @@ $events_result = $conn->query($events_query);
 $active = 'history';
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -122,10 +123,13 @@ $active = 'history';
         }
 
         .no-events-message {
-            text-align: center;
-            font-size: 24px;
-            color: #666;
-            margin-top: 50px;
+            text-align: center !important;
+            color: #666 !important;
+        }
+
+        .no-events-row {
+            text-align: center !important;
+            color: #666 !important;
         }
     </style>
 
@@ -177,7 +181,6 @@ $active = 'history';
                     </div>
 
                     <?php if ($events_result && $events_result->num_rows > 0): ?>
-                        <!-- Table with events -->
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="card">
@@ -185,7 +188,7 @@ $active = 'history';
                                         <div class="table-responsive">
                                             <div id="multi-filter-select_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
                                                 <div class="row">
-                                                    <div class="col-sm-12 col-md-6">
+                                                    <div class="col-sm-12 col-md-5">
                                                         <div class="dataTables_length" id="multi-filter-select_length">
                                                             <label>Show
                                                                 <select name="multi-filter-select_length" aria-controls="multi-filter-select" class="form-control form-control-sm" onchange="location = this.value;">
@@ -197,10 +200,10 @@ $active = 'history';
                                                             </label>
                                                         </div>
                                                     </div>
-                                                    <div class="col-sm-12 col-md-6">
+                                                    <div class="col-sm-12 col-md-7">
                                                         <div id="multi-filter-select_filter" class="dataTables_filter">
                                                             <label>Search:
-                                                                <input type="search" class="form-control form-control-sm" placeholder="Type to search" aria-controls="multi-filter-select" oninput="searchEvents(this.value)">
+                                                                <input type="search" class="form-control form-control-sm" placeholder="Type Name or Category" aria-controls="multi-filter-select" oninput="searchEvents(this.value)">
                                                             </label>
                                                         </div>
                                                     </div>
@@ -220,9 +223,22 @@ $active = 'history';
                                                                         <th>Status</th>
                                                                     </tr>
                                                                 </thead>
+                                                                <tfoot>
+                                                                    <th colspan="6"></th>
+                                                                    <th rowspan="1" colspan="1">
+                                                                        <select class="form-select" id="status-filter">
+                                                                            <option value=""></option>
+                                                                            <option value="0">Pending</option>
+                                                                            <option value="1">Approved</option>
+                                                                            <option value="2">Ongoing</option>
+                                                                            <option value="3">Completed</option>
+                                                                            <option value="4">Cancelled</option>
+                                                                        </select>
+                                                                    </th>
+                                                                </tfoot>
                                                                 <tbody id="event-table-body">
-                                                                    <?php while ($event = $events_result->fetch_assoc()): ?>
-                                                                        <tr>
+                                                                    <?php while ($event = $events_result->fetch_assoc()) { ?>
+                                                                        <tr class="event-row" data-status="<?php echo $event['status']; ?>">
                                                                             <td><?php echo $event['event_name']; ?></td>
                                                                             <td><?php echo $event['category']; ?></td>
                                                                             <td><?php echo $event['start_date']; ?></td>
@@ -241,9 +257,36 @@ $active = 'history';
                                                                                 ?>
                                                                             </td>
                                                                         </tr>
-                                                                    <?php endwhile; ?>
+                                                                    <?php } ?>
+                                                                    <tr id="no-events-row" style="display: none;">
+                                                                        <td colspan="7" class="text-center">No events added with this status.</td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-sm-12 col-md-5">
+                                                        <div class="dataTables_info" id="multi-filter-select_info" role="status" aria-live="polite">
+                                                            Showing <?php echo $start_offset + 1; ?> to <?php echo min($start_offset + $entries_per_page, $total_entries); ?> of <?php echo $total_entries; ?> entries
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-7">
+                                                        <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
+                                                            <ul class="pagination">
+                                                                <?php if ($current_page > 1): ?>
+                                                                    <li class="paginate_button page-item"><a href="?page=<?php echo $current_page - 1; ?>&length=<?php echo $entries_per_page; ?>" class="page-link">Previous</a></li>
+                                                                <?php endif; ?>
+                                                                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                                                                    <li class="paginate_button page-item <?php if ($i == $current_page) echo 'active'; ?>">
+                                                                        <a href="?page=<?php echo $i; ?>&length=<?php echo $entries_per_page; ?>" class="page-link"><?php echo $i; ?></a>
+                                                                    </li>
+                                                                <?php endfor; ?>
+                                                                <?php if ($current_page < $total_pages): ?>
+                                                                    <li class="paginate_button page-item"><a href="?page=<?php echo $current_page + 1; ?>&length=<?php echo $entries_per_page; ?>" class="page-link">Next</a></li>
+                                                                <?php endif; ?>
+                                                            </ul>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -253,33 +296,53 @@ $active = 'history';
                                 </div>
                             </div>
                         </div>
-
                     <?php else: ?>
-                        <div class="no-events-message">
+                        <div class="no-events-message mt-5">
                             <div class="fs-2">You have no events yet.</div>
                         </div>
                     <?php endif; ?>
-
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
         </div>
     </div>
+    </div>
+
     <?php include("partial/script.php"); ?>
+
     <script>
         function searchEvents(query) {
-            const rows = document.querySelectorAll('#event-table-body tr');
+            $.ajax({
+                url: 'modal/search_tables.php',
+                type: 'GET',
+                data: {
+                    search: query
+                },
+                success: function(response) {
+                    $('#event-table-body').html(response);
+                }
+            });
+        }
+
+        document.getElementById('status-filter').addEventListener('change', function() {
+            const selectedStatus = this.value;
+            const rows = document.querySelectorAll('.event-row');
+            let hasVisibleRow = false;
+
             rows.forEach(row => {
-                const eventName = row.cells[0].textContent.toLowerCase();
-                if (eventName.includes(query.toLowerCase())) {
+                const rowStatus = row.getAttribute('data-status');
+
+                if (selectedStatus === '' || rowStatus === selectedStatus) {
                     row.style.display = '';
+                    hasVisibleRow = true;
                 } else {
                     row.style.display = 'none';
                 }
             });
-        }
-    </script>
 
+            document.getElementById('no-events-row').style.display = hasVisibleRow ? 'none' : '';
+        });
+    </script>
 </body>
 
 </html>
