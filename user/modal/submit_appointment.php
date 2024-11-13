@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ref_no = isset($_POST['ref_no']) ? $_POST['ref_no'] : null;
 
     if (isset($_FILES['ref_img']) && $_FILES['ref_img']['error'] == UPLOAD_ERR_OK) {
-        $uploads_dir = '../uploads/';
+        $uploads_dir = '../../assets/ref/';
         $filename = basename($_FILES['ref_img']['name']);
         $file_path = $uploads_dir . $filename;
 
