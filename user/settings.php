@@ -267,7 +267,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         </div>
                                     </div>
                                     <div class="row justify-content-center mx-2 mt-3">
-                                        <button class="btn fs-5 edit-btn" style="width: 150px; background-color: #00A33C; color: white; border-radius: 6px" onclick="enableEditing()">Edit</button>
+                                        <button class="btn fs-5 edit-btn" style="width: 20%; background-color: #00A33C; color: white; border-radius: 6px" onclick="enableEditing()">Edit</button>
                                     </div>
                                 </div>
                             </div>
