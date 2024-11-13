@@ -85,7 +85,6 @@ $events_result = $conn->query($events_query);
 $active = 'history';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -120,6 +119,13 @@ $active = 'history';
         .pagination .page-item .page-link:hover {
             background-color: #203b70;
             color: white;
+        }
+
+        .no-events-message {
+            text-align: center;
+            font-size: 24px;
+            color: #666;
+            margin-top: 50px;
         }
     </style>
 
@@ -169,96 +175,76 @@ $active = 'history';
                             <h3 class="fw-bold mb-3 ms-3">Event History</h3>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <div id="multi-filter-select_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-6">
-                                                    <div class="dataTables_length" id="multi-filter-select_length">
-                                                        <label>Show
-                                                            <select name="multi-filter-select_length" aria-controls="multi-filter-select" class="form-control form-control-sm" onchange="location = this.value;">
-                                                                <option value="?length=10" <?php if ($entries_per_page == 10) echo 'selected'; ?>>10</option>
-                                                                <option value="?length=25" <?php if ($entries_per_page == 25) echo 'selected'; ?>>25</option>
-                                                                <option value="?length=50" <?php if ($entries_per_page == 50) echo 'selected'; ?>>50</option>
-                                                                <option value="?length=100" <?php if ($entries_per_page == 100) echo 'selected'; ?>>100</option>
-                                                            </select> entries
-                                                        </label>
+
+                    <?php if ($events_result && $events_result->num_rows > 0): ?>
+                        <!-- Table with events -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <div id="multi-filter-select_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                                                <div class="row">
+                                                    <div class="col-sm-12 col-md-6">
+                                                        <div class="dataTables_length" id="multi-filter-select_length">
+                                                            <label>Show
+                                                                <select name="multi-filter-select_length" aria-controls="multi-filter-select" class="form-control form-control-sm" onchange="location = this.value;">
+                                                                    <option value="?length=10" <?php if ($entries_per_page == 10) echo 'selected'; ?>>10</option>
+                                                                    <option value="?length=25" <?php if ($entries_per_page == 25) echo 'selected'; ?>>25</option>
+                                                                    <option value="?length=50" <?php if ($entries_per_page == 50) echo 'selected'; ?>>50</option>
+                                                                    <option value="?length=100" <?php if ($entries_per_page == 100) echo 'selected'; ?>>100</option>
+                                                                </select> entries
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-12 col-md-6">
+                                                        <div id="multi-filter-select_filter" class="dataTables_filter">
+                                                            <label>Search:
+                                                                <input type="search" class="form-control form-control-sm" placeholder="Type to search" aria-controls="multi-filter-select" oninput="searchEvents(this.value)">
+                                                            </label>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12 col-md-6">
-                                                    <div id="multi-filter-select_filter" class="dataTables_filter">
-                                                        <label>Search:
-                                                            <input type="search" class="form-control form-control-sm" placeholder="Type to search" aria-controls="multi-filter-select" oninput="searchEvents(this.value)">
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class="table-responsive">
-                                                        <table id="multi-filter-select" class="display table table-striped table-hover dataTable">
-                                                            <thead>
-                                                                <tr role="row">
-                                                                    <th>Event Name</th>
-                                                                    <th>Category</th>
-                                                                    <th>Start Date</th>
-                                                                    <th>End Date</th>
-                                                                    <th>Venue</th>
-                                                                    <th>Reg. Fee</th>
-                                                                    <th>Status</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody id="event-table-body">
-                                                                <?php while ($event = $events_result->fetch_assoc()) { ?>
-                                                                    <tr>
-                                                                        <td><?php echo $event['event_name']; ?></td>
-                                                                        <td><?php echo $event['category']; ?></td>
-                                                                        <td><?php echo $event['start_date']; ?></td>
-                                                                        <td><?php echo $event['end_date']; ?></td>
-                                                                        <td><?php echo $event['venue']; ?></td>
-                                                                        <td>₱<?php echo number_format($event['reg_fee'], 2); ?></td>
-                                                                        <td>
-                                                                            <?php
-                                                                            if ($event['status'] == '1') {
-                                                                                echo '<span class="badge badge-success">Completed</span>';
-                                                                            } elseif ($event['status'] == '0') {
-                                                                                echo '<span class="badge badge-warning">Pending</span>';
-                                                                            } elseif ($event['status'] == '3') {
-                                                                                echo '<span class="badge badge-danger">Cancelled</span>';
-                                                                            }
-                                                                            ?>
-                                                                        </td>
+                                                <div class="row">
+                                                    <div class="col-sm-12">
+                                                        <div class="table-responsive">
+                                                            <table id="multi-filter-select" class="display table table-striped table-hover dataTable">
+                                                                <thead>
+                                                                    <tr role="row">
+                                                                        <th>Event Name</th>
+                                                                        <th>Category</th>
+                                                                        <th>Start Date</th>
+                                                                        <th>End Date</th>
+                                                                        <th>Venue</th>
+                                                                        <th>Reg. Fee</th>
+                                                                        <th>Status</th>
                                                                     </tr>
-                                                                <?php } ?>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-5">
-                                                    <div class="dataTables_info" id="multi-filter-select_info" role="status" aria-live="polite">
-                                                        Showing <?php echo $start_offset + 1; ?> to <?php echo min($start_offset + $entries_per_page, $total_entries); ?> of <?php echo $total_entries; ?> entries
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-7">
-                                                    <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
-                                                        <ul class="pagination">
-                                                            <?php if ($current_page > 1): ?>
-                                                                <li class="paginate_button page-item"><a href="?page=<?php echo $current_page - 1; ?>&length=<?php echo $entries_per_page; ?>" class="page-link">Previous</a></li>
-                                                            <?php endif; ?>
-                                                            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                                                                <li class="paginate_button page-item <?php if ($i == $current_page) echo 'active'; ?>">
-                                                                    <a href="?page=<?php echo $i; ?>&length=<?php echo $entries_per_page; ?>" class="page-link"><?php echo $i; ?></a>
-                                                                </li>
-                                                            <?php endfor; ?>
-                                                            <?php if ($current_page < $total_pages): ?>
-                                                                <li class="paginate_button page-item"><a href="?page=<?php echo $current_page + 1; ?>&length=<?php echo $entries_per_page; ?>" class="page-link">Next</a></li>
-                                                            <?php endif; ?>
-                                                        </ul>
+                                                                </thead>
+                                                                <tbody id="event-table-body">
+                                                                    <?php while ($event = $events_result->fetch_assoc()): ?>
+                                                                        <tr>
+                                                                            <td><?php echo $event['event_name']; ?></td>
+                                                                            <td><?php echo $event['category']; ?></td>
+                                                                            <td><?php echo $event['start_date']; ?></td>
+                                                                            <td><?php echo $event['end_date']; ?></td>
+                                                                            <td><?php echo $event['venue']; ?></td>
+                                                                            <td>₱<?php echo number_format($event['reg_fee'], 2); ?></td>
+                                                                            <td>
+                                                                                <?php
+                                                                                if ($event['status'] == '1') {
+                                                                                    echo '<span class="badge badge-success">Completed</span>';
+                                                                                } elseif ($event['status'] == '0') {
+                                                                                    echo '<span class="badge badge-warning">Pending</span>';
+                                                                                } elseif ($event['status'] == '3') {
+                                                                                    echo '<span class="badge badge-danger">Cancelled</span>';
+                                                                                }
+                                                                                ?>
+                                                                            </td>
+                                                                        </tr>
+                                                                    <?php endwhile; ?>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -267,30 +253,33 @@ $active = 'history';
                                 </div>
                             </div>
                         </div>
-                    </div>
+
+                    <?php else: ?>
+                        <div class="no-events-message">
+                            <div class="fs-2">You have no events yet.</div>
+                        </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
         </div>
     </div>
-    </div>
-
     <?php include("partial/script.php"); ?>
-
     <script>
         function searchEvents(query) {
-            $.ajax({
-                url: 'modal/search_tables.php',
-                type: 'GET',
-                data: {
-                    search: query
-                },
-                success: function(response) {
-                    $('#event-table-body').html(response);
+            const rows = document.querySelectorAll('#event-table-body tr');
+            rows.forEach(row => {
+                const eventName = row.cells[0].textContent.toLowerCase();
+                if (eventName.includes(query.toLowerCase())) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
                 }
             });
         }
     </script>
+
 </body>
 
 </html>
