@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$loggedIn = isset($_SESSION['user_no']);
+$loggedIn = isset($_SESSION["id"]);
 ?>
 
 <!DOCTYPE html>
@@ -16,7 +16,7 @@ $loggedIn = isset($_SESSION['user_no']);
 
   <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
-  <link rel="stylesheet" href="assets/css/index.css"/>
+  <link rel="stylesheet" href="assets/css/index.css" />
 
   <style>
     .logbtn {
@@ -66,13 +66,12 @@ $loggedIn = isset($_SESSION['user_no']);
 
           <div class="d-flex ms-auto fs-4">
             <?php if ($loggedIn): ?>
-              <!-- If the user is logged in, show Logout button -->
               <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
 
                 <li class="nav-item topbar-user dropdown hidden-caret">
                   <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
                     <div class="avatar-sm">
-                      <img src="assets/img/myfavgayman.jpg" alt="Profile Image" class="avatar-img rounded-circle" />
+                      <img src="user/uploads/default_icon.png" alt="Profile Image" class="avatar-img rounded-circle" />
                     </div>
                     <span class="profile-username">
                       <span class="fw-bold"><?= htmlspecialchars($_SESSION['username']) ?></span>
@@ -83,7 +82,7 @@ $loggedIn = isset($_SESSION['user_no']);
                       <li>
                         <div class="user-box">
                           <div class="avatar-lg">
-                            <img src="assets/img/myfavgayman.jpg" alt="Profile Image" class="avatar-img rounded" />
+                            <img src="user/uploads/default_icon.png" alt="Profile Image" class="avatar-img rounded" />
                           </div>
                           <div class="u-text">
                             <h4><?= htmlspecialchars(string: $_SESSION['fname']) . " " . htmlspecialchars($_SESSION['lname']) ?></h4>
@@ -102,7 +101,6 @@ $loggedIn = isset($_SESSION['user_no']);
                 </li>
               </ul>
             <?php else: ?>
-              <!-- If the user is not logged in, show Sign-up and Login buttons -->
               <form action="signup">
                 <button class="btn btn-outline-success me-2 fs-5">Sign-up</button>
               </form>
@@ -116,20 +114,20 @@ $loggedIn = isset($_SESSION['user_no']);
     </div>
   </header>
 
-  <script src="assets/js/index.js"></script>
-
-  <!-- Home Page -->
-  <section
-    id="home"
-    class="hero d-flex justify-content-start align-items-center text-white">
-    <div class="container ms-5 py-5">
-      <span class="mb-3" style="font-size: 4rem;"><b>BOOK YOUR RESERVATIONS NOW!</b></span>
-      <p class="lead mb-4 h3">
-        We, the KKCA and BPC will make sure your event dreams turn into
-        reality!<br />
-        <span class="d-block mt-2">So book now and enjoy later!</span>
-      </p>
-      <button class="logbtn btn btn-lg">Make an Appointment</button>
+  <section id="home">
+    <!-- Home Page -->
+    <div class="hero d-flex justify-content-start align-items-center text-white">
+      <div class="container ms-5 py-5">
+        <span class="mb-3" style="font-size: 4rem;"><b>BOOK YOUR RESERVATIONS NOW!</b></span>
+        <p class="lead mb-4 h3">
+          We, the KKCA and BPC will make sure your event dreams turn into
+          reality!<br />
+          <span class="d-block mt-2">So book now and enjoy later!</span>
+        </p>
+        <form action="login">
+          <button class="logbtn btn btn-lg">Make an Appointment</button>
+        </form>
+      </div>
     </div>
   </section>
 
@@ -138,15 +136,15 @@ $loggedIn = isset($_SESSION['user_no']);
     <div class="container-fluid py-5">
       <div class="container py-5">
         <div class="row g-5">
-          <div class="col-xl-5 wow fadeInLeft" data-wow-delay="0.1s">
+          <div class="col-md-5 wow fadeInLeft" data-wow-delay="0.1s">
             <div class="bg-light rounded">
               <img
                 src="assets/img/about-2.png"
-                class="about img-fluid w-100"
+                class="about img-fluid w-100 img-height"
                 alt="Image" />
               <img
                 src="assets/img/about-3.png"
-                class="border-primary img-fluid w-100 border-bottom border-5"
+                class="border-primary img-fluid w-100 border-bottom border-5 img-height"
                 style="
                     border-top-right-radius: 300px;
                     border-top-left-radius: 300px;
@@ -154,17 +152,17 @@ $loggedIn = isset($_SESSION['user_no']);
                 alt="Image" />
             </div>
           </div>
-          <div class="col-xl-7 wow fadeInRight" data-wow-delay="0.3s">
-            <h5 class="sub-title">About</h5>
-            <h1 class="display-7 mb-4" style="color: black;">
-              We’re The KKCA and BPC Online Event Hub.
+          <div class="col-md-7 wow fadeInRight" data-wow-delay="0.3s">
+            <h5 class="sub-title fs-2">About</h5>
+            <h1 class="display-7 mb-4 fs-1" style="color: black;">
+              <b>We’re The KKCA and BPC Online Event Hub.</b>
             </h1>
             <p class="fs-4 mb-5" style="color: black;">
               Batangas Presbyterian Church was founded in 1991, As a family,
               we are a growing church. BPC welcomes everyone to join us in
               expanding God's Horizon and King's Kid Christian Academy was established to provide an educational experience for Pre-Elem up to G-12, DECS, BI, PCSN.
             </p>
-            <div class="row gy-4 align-items-center mt-4">
+            <div class="row gy-4 align-items-center mt-1">
               <div class="col-4 col-md-3">
                 <div class="bg-primary text-light text-center rounded p-3">
                   <i class="bi bi-calendar" style="font-size: 2.6em;"></i>
@@ -236,9 +234,8 @@ $loggedIn = isset($_SESSION['user_no']);
     </div>
   </section>
 
-  <?php include('assets/partial/script.php'); ?>
+  <?php include('assets/js/script.php'); ?>
 
 </body>
 
 </html>
-

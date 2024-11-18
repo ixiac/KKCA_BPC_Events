@@ -28,23 +28,19 @@ $username = $password = $username_err = $password_err = $login_err = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Validate username
     if (empty(trim($_POST["username"]))) {
         $username_err = "Please enter username.";
     } else {
         $username = trim($_POST["username"]);
     }
 
-    // Validate password
     if (empty(trim($_POST["password"]))) {
         $password_err = "Please enter password.";
     } else {
         $password = trim($_POST["password"]);
     }
 
-    // Proceed if no errors in username and password
     if (empty($username_err) && empty($password_err)) {
-        // Define the user roles and their respective table names
         $user_roles = [
             'student' => 'student',
             'admin' => 'admin',
@@ -53,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'customer' => 'customer'
         ];
 
-        // Iterate through each role and check if the user exists in that table
         foreach ($user_roles as $role => $table) {
 
             if ($role == "customer") {
@@ -68,7 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $user_id = "SFID";
             }
 
-            $sql = "SELECT $user_id, username, password FROM $table WHERE username = ?";
+            $sql = "SELECT $user_id, username, password, fname, lname, email, profile FROM $table WHERE username = ?";
 
             if ($stmt = mysqli_prepare($conn, $sql)) {
                 mysqli_stmt_bind_param($stmt, "s", $param_username);
@@ -78,18 +73,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     mysqli_stmt_store_result($stmt);
 
                     if (mysqli_stmt_num_rows($stmt) == 1) {
-                        mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
+                        mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password, $fname, $lname, $email, $profile);
+
                         if (mysqli_stmt_fetch($stmt)) {
                             if (password_verify($password, $hashed_password)) {
                                 session_start();
 
-                                // Store session data
                                 $_SESSION["loggedin"] = true;
                                 $_SESSION["id"] = (string)$id;
                                 $_SESSION["username"] = $username;
+                                $_SESSION["fname"] = $fname;
+                                $_SESSION["lname"] = $lname;
+                                $_SESSION["email"] = $email;
+                                $_SESSION["profile"] = $profile;
                                 $_SESSION["user_role"] = $role;
 
-                                // Redirect based on the user role
                                 switch ($role) {
                                     case 'student':
                                         header("location: stu/home");
@@ -121,7 +119,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Close connection
     mysqli_close($conn);
 }
 ?>
@@ -147,7 +144,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1 class="mb-3"><b>LOGIN</b></h1>
                 <p class="fs-6">New here? <a class="fs-6" href="signup">Sign-up</a></p>
 
-                <!-- Display error message at the top of the form -->
                 <?php if ($login_err): ?>
                     <div class="alert alert-danger"><?= $login_err ?></div>
                 <?php endif; ?>
