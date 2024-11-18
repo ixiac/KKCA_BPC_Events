@@ -230,6 +230,7 @@ $active = 'history';
                                     <select name="venue" class="form-control" id="editVenue">
                                         <option>BPC Chapel</option>
                                         <option>BPC Open Area</option>
+                                        <option>BPC Hall</option>
                                     </select>
                                 </div>
                                 <div class="row justify-content-center mt-5 mb-3">

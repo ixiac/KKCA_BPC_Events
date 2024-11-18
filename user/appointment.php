@@ -146,7 +146,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                                 <select class="form-select" id="venue-select" name="venue">
                                                     <option>BPC Chapel</option>
                                                     <option>BPC Open Area</option>
-                                                    <option>Malitam Brgy. Hall</option>
+                                                    <option>BPC Hall</option>
                                                 </select>
                                             </div>
                                         </div>
