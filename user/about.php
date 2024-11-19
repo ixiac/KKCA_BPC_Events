@@ -35,34 +35,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="home" class="logo">
-                            <img
-                                src="../assets/img/kaiadmin/logo_light.svg"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
-                        </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
-                    </div>
-                    <!-- End Logo Header -->
+                    <?php include("partial/logo_header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
 
             <div class="container" style="background-color: #dbdde0 !important;">
-            <div class="background-overlay"></div>
+                <div class="background-overlay"></div>
                 <div class="page-inner">
                     <div class="row">
                         <div class="col me-2 d-flex pt-2 pb-4">
@@ -112,7 +91,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         </div>
                         <div class="col-md-6">
                             <div class="card card-post card-round">
-                                <img class="card-img-top" src="../assets/img/bpc-cover.jpg" alt="Card image cap" id="card-img" height="328px">
+                                <img class="card-img-top" src="../assets/img/bpc-cover.jpg" alt="Card image cap" id="card-img" height="328px" style="border-radius: 10px 10px 0 0">
                                 <div class="card-body" id="card-body">
                                     <div class="d-flex">
                                         <div class="avatar">

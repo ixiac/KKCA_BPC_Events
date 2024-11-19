@@ -1,7 +1,7 @@
-<div class="logo-header" data-background-color="dark">
+<div class="logo-header">
     <a href="index.php" class="logo">
         <img
-            src="assets/img/kaiadmin/logo_light.svg"
+            src="assets/img/BPC-logo.png"
             alt="navbar brand"
             class="navbar-brand"
             height="20" />

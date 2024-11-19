@@ -1,10 +1,10 @@
 <?php
-    if (isset($_SESSION['swal_message'])) {
-        $swalType = $_SESSION['swal_message']['type'];
-        $swalTitle = $_SESSION['swal_message']['title'];
-        $swalMessage = isset($_SESSION['swal_message']['message']) ? $_SESSION['swal_message']['message'] : '';
+if (isset($_SESSION['swal_message'])) {
+    $swalType = $_SESSION['swal_message']['type'];
+    $swalTitle = $_SESSION['swal_message']['title'];
+    $swalMessage = isset($_SESSION['swal_message']['message']) ? $_SESSION['swal_message']['message'] : '';
 
-        echo "<script>
+    echo "<script>
                 Swal.fire({
                     icon: '$swalType',
                     title: '$swalTitle',
@@ -14,6 +14,6 @@
                 });
             </script>";
 
-        unset($_SESSION['swal_message']);
-    }
-    ?>
+    unset($_SESSION['swal_message']);
+}
+?>

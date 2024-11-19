@@ -24,9 +24,6 @@
 <link rel="stylesheet" href="assets/css/kaiadmin.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-<!-- CSS Just for demo purpose, don't include it in your project -->
-<link rel="stylesheet" href="assets/css/demo.css" />
-
 <style>
     body {
         font-family: "Trebuchet MS", sans-serif;

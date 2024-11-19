@@ -1,0 +1,27 @@
+.pagination .page-link {
+    color: white;
+}
+
+.pagination .active .page-link {
+    background-color: #203b70 !important;
+    color: white !important;
+}
+
+.pagination .page-item .page-link {
+    background-color: transparent;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #203b70;
+    color: white;
+}
+
+.no-events-message {
+    text-align: center !important;
+    color: #666 !important;
+}
+
+.no-events-row {
+    text-align: center !important;
+    color: #666 !important;
+}

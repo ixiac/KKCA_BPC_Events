@@ -2,7 +2,6 @@
 session_start();
 include("partial/db.php");
 
-// Ensure the user is logged in
 if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../index");
     exit;
@@ -64,7 +63,7 @@ function fetchUserEvents($conn, $username)
     }
 }
 
-$transaction_query = "SELECT APID, event_name, reg_fee, ref_no, ref_img FROM appointment WHERE event_by = ?";
+$transaction_query = "SELECT APID, event_name, category, reg_fee, ref_no, ref_img FROM appointment WHERE event_by = ?";
 $stmt = $conn->prepare($transaction_query);
 $stmt->bind_param("i", $_SESSION['id']);
 if ($stmt->execute()) {
@@ -99,62 +98,26 @@ $active = 'history';
 <html lang="en">
 
 <head>
-
     <?php include("partial/head.php"); ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php include("partial/script.php"); ?>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/forms.css">
+
+    <link rel="stylesheet" href="../assets/css/ev_tables.css">
 
     <style>
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border: 1px solid #203b70 !important;
-            outline: none;
-            box-shadow: 0 0 5px rgba(32, 59, 112, 0.5);
-        }
-
-        .pagination .page-link {
-            color: white;
-        }
-
-        .pagination .active .page-link {
-            background-color: #203b70 !important;
-            color: white !important;
-        }
-
-        .pagination .page-item .page-link {
-            background-color: transparent;
-        }
-
-        .pagination .page-item .page-link:hover {
-            background-color: #203b70;
-            color: white;
-        }
-
-        .no-events-message {
-            text-align: center !important;
-            color: #666 !important;
-        }
-
-        .no-events-row {
-            text-align: center !important;
-            color: #666 !important;
-        }
-
         .modal-dialog {
             max-height: 80%;
         }
     </style>
-
 </head>
 
 <body>
     <?php include("partial/success_alert.php") ?>
+
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
-
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
@@ -260,13 +223,13 @@ $active = 'history';
                                                             <table id="multi-filter-select" class="display table table-striped table-hover dataTable">
                                                                 <thead>
                                                                     <tr role="row">
-                                                                        <th>Event Name</th>
-                                                                        <th>Category</th>
-                                                                        <th>Start Date</th>
-                                                                        <th>End Date</th>
-                                                                        <th>Venue</th>
-                                                                        <th>Status</th>
-                                                                        <th>Action</th>
+                                                                        <th class="text-center">Event Name</th>
+                                                                        <th class="text-center">Category</th>
+                                                                        <th class="text-center">Start Date</th>
+                                                                        <th class="text-center">End Date</th>
+                                                                        <th class="text-center">Venue</th>
+                                                                        <th class="text-center">Status</th>
+                                                                        <th class="text-center">Action</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tfoot>
@@ -284,13 +247,13 @@ $active = 'history';
                                                                 </tfoot>
                                                                 <tbody id="event-table-body">
                                                                     <?php while ($event = $events_result->fetch_assoc()) { ?>
-                                                                        <tr class="event-row" data-status="<?php echo $event['status']; ?>">
-                                                                            <td><?php echo $event['event_name']; ?></td>
-                                                                            <td><?php echo $event['category']; ?></td>
-                                                                            <td><?php echo $event['start_date']; ?></td>
-                                                                            <td><?php echo $event['end_date']; ?></td>
-                                                                            <td><?php echo $event['venue']; ?></td>
-                                                                            <td>
+                                                                        <tr class="event-row" data-status="<?php echo $event['status']; ?>" data-apid="<?php echo $event['APID']; ?>">
+                                                                            <td class="text-center"><?php echo $event['event_name']; ?></td>
+                                                                            <td class="text-center"><?php echo $event['category']; ?></td>
+                                                                            <td class="text-center"><?php echo $event['start_date']; ?></td>
+                                                                            <td class="text-center"><?php echo $event['end_date']; ?></td>
+                                                                            <td class="text-center"><?php echo $event['venue']; ?></td>
+                                                                            <td class="text-center">
                                                                                 <?php
                                                                                 if ($event['status'] == '0') {
                                                                                     echo '<span class="badge badge-warning ms-1" style="width: 60%">Pending</span>';
@@ -307,13 +270,13 @@ $active = 'history';
                                                                             </td>
                                                                             <td>
                                                                                 <div class="form-button-action">
-                                                                                    <button type="button" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
-                                                                                        '<?php echo htmlspecialchars($event['APID']); ?>',
-                                                                                        '<?php echo htmlspecialchars($event['event_name']); ?>',
-                                                                                        '<?php echo htmlspecialchars($event['category']); ?>',
-                                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
-                                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
-                                                                                        '<?php echo htmlspecialchars($event['venue']); ?>',
+                                                                                    <button type="button" title="Edit" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
+                                                                                            '<?php echo htmlspecialchars($event['APID']); ?>',
+                                                                                            '<?php echo htmlspecialchars($event['event_name']); ?>',
+                                                                                            '<?php echo htmlspecialchars($event['category']); ?>',
+                                                                                            '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
+                                                                                            '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
+                                                                                            '<?php echo htmlspecialchars($event['venue']); ?>',
                                                                                         )">
                                                                                         <i class="fa fa-edit"></i>
                                                                                     </button>
@@ -366,7 +329,7 @@ $active = 'history';
                         </div>
 
                         <div class="row pt-5">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="card">
                                     <div class="card-header">
                                         <div class="card-head-row card-tools-still-right">
@@ -374,11 +337,12 @@ $active = 'history';
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
-                                        <div class="table-responsive">
+                                        <div class="table-responsive" style="border-radius: 10px !important">
                                             <table class="table align-items-center mb-0">
                                                 <thead class="thead-light">
                                                     <tr>
-                                                        <th scope="col">Event Name</th>
+                                                        <th scope="col" class="text-center">Event Name</th>
+                                                        <th scope="col" class="text-center">Category</th>
                                                         <th scope="col" class="text-center">Amount</th>
                                                         <th scope="col" class="text-center">Reference No.</th>
                                                         <th scope="col" class="text-center">Receipt</th>
@@ -389,7 +353,8 @@ $active = 'history';
                                                     <?php if ($transaction_result && $transaction_result->num_rows > 0): ?>
                                                         <?php while ($transaction = $transaction_result->fetch_assoc()): ?>
                                                             <tr>
-                                                                <td><?php echo $transaction['event_name']; ?></td>
+                                                                <td class="text-center"><?php echo $transaction['event_name']; ?></td>
+                                                                <td class="text-center"><?php echo $transaction['category']; ?></td>
                                                                 <td class="text-center">₱<?php echo number_format($transaction['reg_fee'], 2); ?></td>
                                                                 <td class="text-center"><?php echo $transaction['ref_no']; ?></td>
                                                                 <td class="text-center">
@@ -454,19 +419,6 @@ $active = 'history';
                                                                     </div>
                                                                 </div>
                                                             </div>
-
-
-                                                            <script>
-                                                                function editTransacModal(APID, ref_no, ref_img) {
-                                                                    document.getElementById('ref_no').value = ref_no;
-                                                                    document.getElementById('current_ref_img').textContent = ref_img;
-                                                                    document.getElementById('current_image').value = ref_img;
-                                                                    document.getElementById('APID').value = APID;
-
-                                                                    $('#editTransacModal').modal('show');
-                                                                }
-                                                            </script>
-
                                                         <?php endwhile; ?>
                                                     <?php else: ?>
                                                         <tr>
@@ -487,9 +439,6 @@ $active = 'history';
         </div>
     </div>
     </div>
-
-    <?php include("partial/script.php"); ?>
-
     <script>
         function searchEvents(query) {
             $.ajax({
@@ -534,8 +483,57 @@ $active = 'history';
             var editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
             editEventModal.show();
         }
-    </script>
 
+        function editTransacModal(APID, ref_no, ref_img) {
+            document.getElementById('ref_no').value = ref_no;
+            document.getElementById('current_ref_img').textContent = ref_img;
+            document.getElementById('current_image').value = ref_img;
+            document.getElementById('APID').value = APID;
+
+            $('#editTransacModal').modal('show');
+        }
+
+        function deleteEvent(APID) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00A33C',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "modal/delete_events.php", true);
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+                    xhr.onload = function() {
+                        if (xhr.status === 200) {
+                            Swal.fire(
+                                'Deleted!',
+                                'The event has been removed.',
+                                'success'
+                            );
+
+                            var row = document.querySelector(`tr[data-apid="${APID}"]`);
+                            if (row) {
+                                row.remove();
+                            }
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'There was an issue removing the event.',
+                                'error'
+                            );
+                        }
+                    };
+                    xhr.send("APID=" + APID);
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>
