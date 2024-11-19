@@ -3,31 +3,17 @@
 session_start();
 include("partial/db.php");
 
-// Redirect to login if user is not logged in
-if (!isset($_SESSION['user_no'])) {
-    header("Location: index");
-    exit();
-}
-
-// Fetch user data from the database
-$user_no = $_SESSION['user_no']; // Get the user ID from the session
-$query = "SELECT fname, lname, email, username, age FROM accounts WHERE user_no = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_no);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $username = $user['username']; // Get the logged-in user's username
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: ../index");
+    exit;
 } else {
-    // Redirect to login if user data not found
-    header("Location: index");
-    exit();
+    $sql = "SELECT * FROM student WHERE SID = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $user_id = $row["SID"];
 }
 
-// Fetch events from the "ch_events" table
-$events_query = "SELECT event_name, category, start_date, end_date, venue, reg_fee, status FROM sc_events";
+$events_query = "SELECT * FROM school_events";
 $events_stmt = $conn->prepare($events_query);
 $events_stmt->execute();
 $events_result = $events_stmt->get_result();
@@ -49,28 +35,7 @@ $active = 'history';
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="home" class="logo">
-                            <img
-                                src="assets/img/kaiadmin/logo_light.svg"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
-                        </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
-                    </div>
-                    <!-- End Logo Header -->
+                <?php include("partial/logo-header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
@@ -112,34 +77,30 @@ $active = 'history';
                                                             <thead>
                                                                 <tr role="row">
                                                                     <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Event Name: activate to sort column ascending" style="width: 280px">Event Name</th>
-                                                                    <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Category: activate to sort column ascending" aria-sort="descending">Category</th>
                                                                     <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">Start Date</th>
                                                                     <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Date: activate to sort column ascending">End Date</th>
-                                                                    <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Venue: activate to sort column ascending">Venue</th>
-                                                                    <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Registration Fee: activate to sort column ascending">Reg. Fee</th>
-                                                                    <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending">Status</th>
+                                                                    <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Registration Fee: activate to sort column ascending">Attendees</th>
+                                                                    <!-- <th class="sorting" tabindex="0" aria-controls="multi-filter-select" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending">Status</th> -->
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
                                                                 <?php while ($event = $events_result->fetch_assoc()) { ?>
                                                                     <tr>
                                                                         <td><?php echo $event['event_name']; ?></td>
-                                                                        <td><?php echo $event['category']; ?></td>
                                                                         <td><?php echo $event['start_date']; ?></td>
                                                                         <td><?php echo $event['end_date']; ?></td>
-                                                                        <td><?php echo $event['venue']; ?></td>
-                                                                        <td>₱<?php echo number_format($event['reg_fee'], 2); ?></td>
-                                                                        <td>
+                                                                        <td><?php echo $event['attendees']; ?></td>
+                                                                        <!-- <td>
                                                                             <?php
-                                                                            if ($event['status'] == 'completed') {
-                                                                                echo '<span class="badge badge-success" style="width: 80px;">Completed</span>';
-                                                                            } elseif ($event['status'] == 'pending') {
-                                                                                echo '<span class="badge badge-warning" style="width: 80px;">Pending</span>';
-                                                                            } elseif ($event['status'] == 'cancelled') {
-                                                                                echo '<span class="badge badge-danger" style="width: 80px;">Cancelled</span>';
-                                                                            }
+                                                                            // if ($event['status'] == 'completed') {
+                                                                            //     echo '<span class="badge badge-success" style="width: 80px;">Completed</span>';
+                                                                            // } elseif ($event['status'] == 'pending') {
+                                                                            //     echo '<span class="badge badge-warning" style="width: 80px;">Pending</span>';
+                                                                            // } elseif ($event['status'] == 'cancelled') {
+                                                                            //     echo '<span class="badge badge-danger" style="width: 80px;">Cancelled</span>';
+                                                                            // }
                                                                             ?>
-                                                                        </td>
+                                                                        </td> -->
                                                                     </tr>
                                                                 <?php } ?>
                                                             </tbody>
@@ -154,7 +115,6 @@ $active = 'history';
                                                 <div class="col-sm-12 col-md-7">
                                                     <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
                                                         <ul class="pagination">
-                                                            <!-- Pagination will be dynamically generated here if needed -->
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -174,5 +134,4 @@ $active = 'history';
     </div>
     <?php include("partial/script.php"); ?>
 </body>
-
 </html>
