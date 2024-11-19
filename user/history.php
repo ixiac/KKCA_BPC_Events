@@ -64,6 +64,15 @@ function fetchUserEvents($conn, $username)
     }
 }
 
+$transaction_query = "SELECT APID, event_name, reg_fee, ref_no, ref_img FROM appointment WHERE event_by = ?";
+$stmt = $conn->prepare($transaction_query);
+$stmt->bind_param("i", $_SESSION['id']);
+if ($stmt->execute()) {
+    $transaction_result = $stmt->get_result();
+} else {
+    echo "Error fetching transaction data: " . $stmt->error;
+}
+
 $username = $_SESSION["username"];
 $events_result = fetchUserEvents($conn, $username);
 
@@ -133,60 +142,23 @@ $active = 'history';
             text-align: center !important;
             color: #666 !important;
         }
+
+        .modal-dialog {
+            max-height: 80%;
+        }
     </style>
 
 </head>
 
 <body>
-
-    <?php
-    if (isset($_SESSION['swal_message'])) {
-        $swalType = $_SESSION['swal_message']['type'];
-        $swalTitle = $_SESSION['swal_message']['title'];
-        $swalMessage = isset($_SESSION['swal_message']['message']) ? $_SESSION['swal_message']['message'] : '';
-
-        echo "<script>
-                Swal.fire({
-                    icon: '$swalType',
-                    title: '$swalTitle',
-                    text: '$swalMessage',
-                    confirmButtonColor: '#00A33C',
-                    confirmButtonText: 'OK'
-                });
-            </script>";
-
-        unset($_SESSION['swal_message']);
-    }
-    ?>
-
+    <?php include("partial/success_alert.php") ?>
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
 
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="home" class="logo">
-                            <img
-                                src="assets/img/kaiadmin/logo_light.svg"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
-                        </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
-                    </div>
-                    <!-- End Logo Header -->
+                    <?php include("partial/logo_header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
@@ -246,13 +218,13 @@ $active = 'history';
                 <div class="page-inner">
                     <div class="row">
                         <div class="col me-2 d-flex pt-2 pb-4">
-                            <a href="home"
-                                style="font-size: 20px; margin-top: 3px; color: gray;">
+                            <a href="home" style="font-size: 20px; margin-top: 3px; color: gray;">
                                 <i class="fas fa-arrow-left me-2"></i>
                             </a>
                             <h3 class="fw-bold mb-3 ms-3">Event History</h3>
                         </div>
                     </div>
+
 
                     <?php if ($events_result && $events_result->num_rows > 0): ?>
                         <div class="row">
@@ -345,7 +317,7 @@ $active = 'history';
                                                                                         )">
                                                                                         <i class="fa fa-edit"></i>
                                                                                     </button>
-                                                                                    <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+                                                                                    <button type="button" data-bs-toggle="tooltip" title="Remove" class="btn btn-link btn-danger" onclick="deleteEvent('<?php echo htmlspecialchars($event['APID']); ?>')">
                                                                                         <i class="fa fa-times"></i>
                                                                                     </button>
                                                                                 </div>
@@ -360,6 +332,7 @@ $active = 'history';
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="row">
                                                     <div class="col-sm-12 col-md-5">
                                                         <div class="dataTables_info" id="multi-filter-select_info" role="status" aria-live="polite">
@@ -384,15 +357,128 @@ $active = 'history';
                                                         </div>
                                                     </div>
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    <?php else: ?>
-                        <div class="no-events-message mt-5">
-                            <div class="fs-2">You have no events yet.</div>
+
+                        <div class="row pt-5">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-head-row card-tools-still-right">
+                                            <div class="card-title">Transaction History</div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table align-items-center mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th scope="col">Event Name</th>
+                                                        <th scope="col" class="text-center">Amount</th>
+                                                        <th scope="col" class="text-center">Reference No.</th>
+                                                        <th scope="col" class="text-center">Receipt</th>
+                                                        <th scope="col" class="text-center">Edit</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php if ($transaction_result && $transaction_result->num_rows > 0): ?>
+                                                        <?php while ($transaction = $transaction_result->fetch_assoc()): ?>
+                                                            <tr>
+                                                                <td><?php echo $transaction['event_name']; ?></td>
+                                                                <td class="text-center">₱<?php echo number_format($transaction['reg_fee'], 2); ?></td>
+                                                                <td class="text-center"><?php echo $transaction['ref_no']; ?></td>
+                                                                <td class="text-center">
+                                                                    <a href="#" class="btn ps-3 pe-2" style="color: #00A33C" data-bs-toggle="modal" data-bs-target="#viewImageModal<?php echo $transaction['ref_no']; ?>">View</a>
+                                                                </td>
+                                                                <td class="text-center">
+                                                                    <button type="button" class="btn btn-link btn-primary btn-lg" onclick="editTransacModal(
+                                                                            '<?php echo htmlspecialchars($transaction['APID']); ?>',
+                                                                            '<?php echo htmlspecialchars($transaction['ref_no']); ?>',
+                                                                            '<?php echo htmlspecialchars($transaction['ref_img']); ?>'
+                                                                        )">
+                                                                        <i class="fa fa-edit"></i>
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+
+                                                            <!-- Receipt Modal -->
+                                                            <div class="modal fade" id="viewImageModal<?php echo $transaction['ref_no']; ?>" tabindex="-1" aria-labelledby="viewImageModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="viewImageModalLabel">Image Receipt</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <img src="../assets/ref/<?php echo $transaction['ref_img']; ?>" alt="Transaction Receipt" class="img-fluid">
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn" data-bs-dismiss="modal" style="color: white; background-color: #00A33C; border-radius: 6px">Close</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Edit Transaction Modal -->
+                                                            <div class="modal fade" id="editTransacModal" tabindex="-1" aria-labelledby="editTransacModalLabel" aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="editTransacModalLabel">Edit Transaction</h5>
+                                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form id="editTransacForm" action="modal/update_transac.php" method="POST" enctype="multipart/form-data">
+                                                                                <input type="hidden" id="APID" name="APID">
+                                                                                <div class="mb-3">
+                                                                                    <label for="ref_no" class="form-label">Reference Number</label>
+                                                                                    <input type="number" class="form-control" id="ref_no" name="ref_no">
+                                                                                </div>
+                                                                                <div class="mb-3">
+                                                                                    <label for="ref_img" class="form-label">Receipt Image</label>
+                                                                                    <input type="file" class="form-control" id="ref_img" name="ref_img">
+                                                                                    <small>Current image: <span id="current_ref_img"></span></small>
+                                                                                </div>
+                                                                                <input type="hidden" id="current_image" name="current_image">
+                                                                            </form>
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button type="button" class="btn" data-bs-dismiss="modal" style="color: white; background-color: #d33; border-radius: 6px">Cancel</button>
+                                                                            <button type="submit" class="btn" form="editTransacForm" style="color: white; background-color: #00A33C; border-radius: 6px">Save changes</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <script>
+                                                                function editTransacModal(APID, ref_no, ref_img) {
+                                                                    document.getElementById('ref_no').value = ref_no;
+                                                                    document.getElementById('current_ref_img').textContent = ref_img;
+                                                                    document.getElementById('current_image').value = ref_img;
+                                                                    document.getElementById('APID').value = APID;
+
+                                                                    $('#editTransacModal').modal('show');
+                                                                }
+                                                            </script>
+
+                                                        <?php endwhile; ?>
+                                                    <?php else: ?>
+                                                        <tr>
+                                                            <td colspan="5" class="text-center">No transaction history available.</td>
+                                                        </tr>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -449,6 +535,7 @@ $active = 'history';
             editEventModal.show();
         }
     </script>
+
 </body>
 
 </html>
