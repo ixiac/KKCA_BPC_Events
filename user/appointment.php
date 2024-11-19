@@ -29,75 +29,20 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 <html lang="en">
 
 <head>
-
     <?php include("partial/head.php"); ?>
 
-    <style>
-        input:focus,
-        textarea:focus,
-        select:focus {
-            border: 1px solid #203b70 !important;
-            outline: none;
-            box-shadow: 0 0 5px rgba(32, 59, 112, 0.5);
-        }
-    </style>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <link rel="stylesheet" href="../assets/css/forms.css">
 </head>
 
 <body>
-
-    <?php
-    if (isset($_SESSION['swal_message'])) {
-        $swalType = $_SESSION['swal_message']['type'];
-        $swalTitle = $_SESSION['swal_message']['title'];
-        $swalMessage = isset($_SESSION['swal_message']['message']) ? $_SESSION['swal_message']['message'] : '';
-
-        echo "<script>
-                Swal.fire({
-                    icon: '$swalType',
-                    title: '$swalTitle',
-                    text: '$swalMessage',
-                    confirmButtonColor: '#00A33C',
-                    confirmButtonText: 'OK'
-                });
-            </script>";
-
-        unset($_SESSION['swal_message']);
-    }
-    ?>
+    <?php include("partial/success_alert.php")?>
 
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="index.php" class="logo">
-                            <img
-                                src="assets/img/kaiadmin/logo_light.svg"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
-                        </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
-                    </div>
-                    <!-- End Logo Header -->
+                    <?php include("partial/logo_header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
@@ -282,7 +227,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                 </div>
                             </li>
 
-                            <!-- Step 5: Prepare for Meeting -->
                             <li>
                                 <div class="timeline-badge">
                                     <i class="far fa-folder-open"></i>
@@ -299,7 +243,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                 </div>
                             </li>
 
-                            <!-- Final Step: Offline Meeting -->
                             <li class="timeline-inverted">
                                 <div class="timeline-badge success">
                                     <i class="far fa-handshake"></i>
@@ -326,112 +269,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     </div>
     <?php include("partial/script.php"); ?>
 
-    <script>
-        function updateDownPayment() {
-            const category = document.getElementById("category-select").value;
-            const downPaymentText = document.getElementById("down-payment-text");
-
-            let downPayment;
-
-            switch (category) {
-                case "Wedding":
-                    downPayment = "₱5,000 - ₱15,000";
-                    break;
-                case "Baptism":
-                    downPayment = "₱500 - ₱3,000";
-                    break;
-                case "Celebrations":
-                    downPayment = "₱2,000 - ₱10,000";
-                    break;
-                case "Funerals":
-                    downPayment = "₱3,000 - ₱10,000";
-                    break;
-                case "Community Outreach":
-                    downPayment = "₱2,000 - ₱5,000";
-                    break;
-                case "Youth Fellowship":
-                    downPayment = "₱1,000 - ₱5,000";
-                    break;
-                default:
-                    downPayment = "Please select a category";
-                    break;
-            }
-            downPaymentText.textContent = `Down payment: ${downPayment}`;
-        }
-
-        const unavailableDates = <?php echo json_encode($unavailableDates); ?>;
-
-        function disableUnavailableDates() {
-            const startDateInput = document.getElementById("start_date");
-            const endDateInput = document.getElementById("end_date");
-
-            unavailableDates.forEach(range => {
-                const start = new Date(range.start_date);
-                const end = new Date(range.end_date);
-
-                startDateInput.addEventListener("input", () => {
-                    const selectedDate = new Date(startDateInput.value);
-                    if (selectedDate >= start && selectedDate <= end) {
-                        alert("This date is unavailable. Please select a different start date.");
-                        startDateInput.value = "";
-                    }
-                });
-
-                endDateInput.addEventListener("input", () => {
-                    const selectedDate = new Date(endDateInput.value);
-                    if (selectedDate >= start && selectedDate <= end) {
-                        alert("This date is unavailable. Please select a different end date.");
-                        endDateInput.value = "";
-                    }
-                });
-            });
-        }
-
-        disableUnavailableDates();
-
-        function setEndDateMin() {
-            const startDateInput = document.getElementById("start_date");
-            const endDateInput = document.getElementById("end_date");
-
-            endDateInput.min = startDateInput.value;
-        }
-
-        function confirmSubmission() {
-            // Get all input fields
-            const eventName = document.getElementById('event_name').value.trim();
-            const category = document.getElementById('category-select').value.trim();
-            const venue = document.getElementById('venue-select').value.trim();
-            const startDate = document.getElementById('start_date').value.trim();
-            const endDate = document.getElementById('end_date').value.trim();
-            const regFee = document.getElementById('registration-fee').value.trim();
-            const refNo = document.getElementById('reference-no').value.trim();
-            const refImg = document.getElementById('exampleFormControlFile1').value.trim();
-
-            if (!eventName || !category || !venue || !startDate || !endDate || !regFee || !refNo || !refImg) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Information',
-                    text: 'Please fill in all fields before submitting.',
-                    confirmButtonColor: '#d33'
-                });
-            } else {
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "Do you want to submit this appointment?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#00A33C',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Submit'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById('appointmentForm').submit();
-                    }
-                });
-            }
-        }
-    </script>
-
+    <?php include("partial/aptnjs.php"); ?>
 </body>
-
-</html>
+</html> 

@@ -1,10 +1,8 @@
-<!-- Navbar Header -->
 <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom shadow">
     <div class="container-fluid">
 
-        <img src="../assets/img/KKCA-logo.png" alt="Logo 1" class="logo me-2" height="60" />
-        <img src="../assets/img/BPC-logo.png" alt="Logo 2" class="logo me-2" height="60" />
-        <h2 class="mt-2"><b>Event Portal</b></h2>
+        <img src="../assets/img/BPC-logo.png" alt="Logo 2" class="logo me-2" height="55" />
+        <p class="my-2 fs-3"><b>Event Portal</b></p>
 
         <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
             <li class="nav-item topbar-icon dropdown hidden-caret submenu">

@@ -26,17 +26,12 @@
 <script src="../assets/js/plugin/jsvectormap/world.js"></script>
 
 <!-- Sweet Alert -->
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Kaiadmin JS -->
 <script src="../assets/js/kaiadmin.min.js"></script>
 
 <script src="../assets/js/about.js"></script>
 
-
-<!-- Kaiadmin DEMO methods, don't include it in your project! -->
-<script src="../assets/js/setting-demo.js"></script>
-<script src="../assets/js/demo.js"></script>
-
-<script src="../assets/js/av-events-dropdown.js"></script>
-
+<!-- JQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
