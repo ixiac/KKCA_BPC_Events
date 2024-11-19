@@ -233,9 +233,7 @@ $loggedIn = isset($_SESSION["id"]);
       </div>
     </div>
   </section>
-
   <?php include('assets/js/script.php'); ?>
-
 </body>
 
 </html>
