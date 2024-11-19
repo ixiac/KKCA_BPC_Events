@@ -13,6 +13,9 @@
                 <button class="btn btn-toggle sidenav-toggler">
                     <i class="gg-menu-left"></i>
                 </button>
+                <button class="topbar-toggler more">
+                    <i class="gg-more-vertical-alt"></i>
+                </button>
             </div>
         </div>
         <!-- End Logo Header -->
@@ -20,7 +23,9 @@
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
-                <li class="nav-item <?php if ($active == "home") { echo "active"; } ?>">
+                <li class="nav-item <?php if ($active == "home") {
+                                        echo "active";
+                                    } ?>">
                     <a href="home">
                         <i class="fas fa-home"></i>
                         <p>Home Page</p>
@@ -32,19 +37,25 @@
                     </span>
                     <h4 class="text-section" style="color: #b9babf !important">Components</h4>
                 </li>
-                <li class="nav-item <?php if ($active == "history") { echo "active"; } ?>">
+                <li class="nav-item <?php if ($active == "history") {
+                                        echo "active";
+                                    } ?>">
                     <a href="history">
                         <i class="fas fa-table"></i>
                         <p>Event History</p>
                     </a>
                 </li>
-                <li class="nav-item <?php if ($active == "settings") { echo "active"; } ?>">
+                <li class="nav-item <?php if ($active == "settings") {
+                                        echo "active";
+                                    } ?>">
                     <a href="settings">
                         <i class="fas fa-pen"></i>
                         <p>Settings</p>
                     </a>
                 </li>
-                <li class="nav-item <?php if ($active == "about") { echo "active"; } ?>">
+                <li class="nav-item <?php if ($active == "about") {
+                                        echo "active";
+                                    } ?>">
                     <a href="about">
                         <i class="fas fa-info"></i>
                         <p>About</p>

@@ -7,10 +7,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../index");
     exit;
 } else {
-    $sql = "SELECT * FROM customer WHERE CID = '" . $_SESSION['id'] . "'";
+    $sql = "SELECT * FROM church_mem WHERE CMID = '" . $_SESSION['id'] . "'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
-    $user_id = $row["CID"];
+    $user_id = $row["CMID"];
 
     $active = 'about';
 }

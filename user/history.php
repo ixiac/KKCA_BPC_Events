@@ -432,6 +432,8 @@ $active = 'history';
                                 </div>
                             </div>
                         </div>
+                    <?php else: ?>
+                        <p class="fs-3 pt-5 text-muted text-center">No events added yet.</p>
                     <?php endif; ?>
                 </div>
             </div>
