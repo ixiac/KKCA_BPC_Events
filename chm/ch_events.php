@@ -13,8 +13,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $user_id = $row["CMID"];
 }
 
-// Fetch events from the "ch_events" table
-$events_query = "SELECT * FROM church_events";
+$events_query = "SELECT * FROM school_events";
 $events_stmt = $conn->prepare($events_query);
 $events_stmt->execute();
 $events_result = $events_stmt->get_result();
@@ -27,6 +26,12 @@ $active = 'history';
 
 <head>
     <?php include("partial/head.php"); ?>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js"></script>
+
+    <link href="../assets/css/calendar.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -36,43 +41,44 @@ $active = 'history';
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="home" class="logo">
-                            <img
-                                src="assets/img/kaiadmin/logo_light.svg"
-                                alt="navbar brand"
-                                class="navbar-brand"
-                                height="20" />
-                        </a>
-                        <div class="nav-toggle">
-                            <button class="btn btn-toggle toggle-sidebar">
-                                <i class="gg-menu-right"></i>
-                            </button>
-                            <button class="btn btn-toggle sidenav-toggler">
-                                <i class="gg-menu-left"></i>
-                            </button>
-                        </div>
-                        <button class="topbar-toggler more">
-                            <i class="gg-more-vertical-alt"></i>
-                        </button>
-                    </div>
-                    <!-- End Logo Header -->
+                    <?php include("partial/logo-header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
 
             <div class="container" style="background-color: #dbdde0 !important;">
                 <div class="page-inner">
-                    <div class="row">
-                        <div class="col me-2 d-flex pt-2 pb-4">
-                            <a href="home"
-                                style="font-size: 20px; margin-top: 3px; color: gray;">
-                                <i class="fas fa-arrow-left me-2"></i>
-                            </a>
-                            <h3 class="fw-bold mb-3 ms-3">Event History</h3>
+                    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-1 pb-4">
+                        <div class="row">
+                            <div class="col d-flex pt-2 pb-3">
+                                <a href="home"
+                                    style="font-size: 20px; margin-top: 3px; color: gray;">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                </a>
+                                <h3 class="fw-bold mb-3 ms-3">Event History</h3>
+                            </div>
+                        </div>
+                        <div class="ms-md-auto pb-3">
+                            <a data-bs-toggle="modal" data-bs-target="#sc_calendarModal" class="btn" style="color: white; background-color: #203b70; border-radius: 10px">View Calendar</a>
                         </div>
                     </div>
+
+                    <div class="modal fade" id="ch_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="calendarModalLabel">Event Calendar</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="scroll overflow-y-scroll p-2">
+                                        <div id="ch_calendar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
@@ -137,7 +143,6 @@ $active = 'history';
                                                 <div class="col-sm-12 col-md-7">
                                                     <div class="dataTables_paginate paging_simple_numbers" id="multi-filter-select_paginate">
                                                         <ul class="pagination">
-                                                            <!-- Pagination will be dynamically generated here if needed -->
                                                         </ul>
                                                     </div>
                                                 </div>
@@ -156,6 +161,31 @@ $active = 'history';
 
     </div>
     <?php include("partial/script.php"); ?>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('ch_calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: {
+                    url: 'modal/ch_calendar.php',
+                    method: 'GET',
+                    failure: function() {
+                        alert('Failed to load events!');
+                    },
+                    success: function(data) {
+                        console.log("Loaded events:", data);
+                    }
+                },
+                eventColor: '#00A33C',
+                locale: 'en'
+            });
+
+            $('#ch_calendarModal').on('shown.bs.modal', function() {
+                calendar.render();
+            });
+        });
+    </script>
 </body>
 
 </html>
