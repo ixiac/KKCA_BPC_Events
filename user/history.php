@@ -87,8 +87,10 @@ $total_entries = $total_entries_result->fetch_assoc()['total'];
 
 $total_pages = ceil($total_entries / $entries_per_page);
 
-$events_query = "SELECT * FROM appointment LIMIT $start_offset, $entries_per_page";
-$events_result = $conn->query($events_query);
+$stmt = $conn->prepare("SELECT * FROM appointment WHERE event_by = ? LIMIT ?, ?");
+$stmt->bind_param("sii", $_SESSION['id'], $start_offset, $entries_per_page);
+$stmt->execute();
+$events_result = $stmt->get_result();
 
 $active = 'history';
 ?>
