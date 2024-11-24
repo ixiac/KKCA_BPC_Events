@@ -36,7 +36,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <?php include("partial/sidebar.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
