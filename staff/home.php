@@ -71,7 +71,7 @@ if ($result->num_rows > 0) {
 }
 
 $month_aptn = " SELECT (SELECT COUNT(*) FROM appointment WHERE DATE(start_date) = CURDATE()) AS today_count,
-                (SELECT COUNT(*) FROM appointment WHERE MONTH(start_date) = MONTH(CURDATE()) AND YEAR(start_date) = YEAR(CURDATE())) AS total_month_count";
+                (SELECT COUNT(*) FROM appointment WHERE MONTH(date_created) = MONTH(CURDATE()) AND YEAR(date_created) = YEAR(CURDATE())) AS total_month_count";
 $result = $conn->query($month_aptn);
 
 $percentage_change = 0;
@@ -195,15 +195,15 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         </div>
                     </div>
 
-                    <!-- Calendar Modal -->
-                    <div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                    <!-- Appointment Calendar Modal -->
+                    <div class="modal fade overflow-hidden" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="calendarModalLabel">Appointment Calendar</h5>
+                                    <p class="modal-title fs-4" id="calendarModalLabel">Appointment Calendar</p>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body" style="max-height: 84vh">
                                     <div class="scroll overflow-y-scroll p-2">
                                         <div id="calendar"></div>
                                     </div>
@@ -213,15 +213,15 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     </div>
 
                     <!-- School Calendar Modal -->
-                    <div class="modal fade" id="sc_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                    <div class="modal fade overflow-hidden" id="sc_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="calendarModalLabel">School Calendar</h5>
+                                    <p class="modal-title fs-4" id="calendarModalLabel">School Calendar</p>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <div class="scroll overflow-y-scroll p-2">
+                                    <div class="scroll overflow-y-scroll p-2" style="max-height: 84vh">
                                         <div id="sc_calendar"></div>
                                     </div>
                                 </div>
@@ -229,7 +229,24 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         </div>
                     </div>
 
-                    <div class="row">
+                    <!-- Church Calendar Modal -->
+                    <div class="modal fade overflow-hidden" id="ch_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <p class="modal-title fs-4" id="calendarModalLabel">Church Calendar</p>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body" style="max-height: 84vh">
+                                    <div class="scroll overflow-y-scroll p-2">
+                                        <div id="ch_calendar"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row pb-5">
                         <div class="col-md-4">
                             <div class="card card-stats card-round">
                                 <div class="card-body">
@@ -289,7 +306,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row pb-5">
                         <div class="col-md-6 d-flex flex-column">
                             <div class="card flex-fill">
                                 <div class="card-header">
@@ -308,12 +325,12 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         </div>
 
                         <div class="col-md-6 d-flex flex-column">
-                            <div class="card flex-fill">
+                            <div class="card flex-fill" style="background-color: #203b70">
                                 <div class="card-body pb-0">
-                                    <div class="fs-2 fw-bold float-end text-primary"><?php echo number_format($percentage_change); ?>%</div>
-                                    <h2 class="mb-2"><?php echo number_format($daily_aptn); ?></h2>
-                                    <p class="text-muted">New Appointments</p>
-                                    <div class="pull-in sparkline-fix ps-2 pe-4">
+                                    <div class="fs-2 fw-bold float-end" style="color: white;"><?php echo number_format($percentage_change); ?>%</div>
+                                    <p class="mb-2 fs-3" style="color: white"><?php echo number_format($daily_aptn); ?></p>
+                                    <p style="color: white">New Appointments</p>
+                                    <div class="pull-in sparkline-fix pb-2">
                                         <div id="aptnchart" style="width: 100%; height: 102px;"></div>
                                     </div>
                                 </div>
@@ -324,108 +341,46 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     <div class="fs-2 fw-bold float-end text-primary"><?php echo number_format($percentage_change); ?>%</div>
                                     <p class="fs-3 mb-2">Events today: <?php echo number_format($daily_event); ?></p>
                                     <p class="text-muted">Events in <?php echo $currentMonth; ?></p>
-                                    <div class="pull-in sparkline-fix ps-2 pe-4">
+                                    <div class="pull-in sparkline-fix pb-2">
                                         <div id="cataptnchart" style="width: 100%; height: 102px;"></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row">
-                        <div class="col-md-8">
-                            <div class="card card-round">
-                                <div class="background-overlay2"></div>
-                                <style>
-                                    .background-overlay2 {
-                                        position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 100%;
-                                        height: 100%;
-                                        background-image: url('../assets/img/libag.png');
-                                        background-position: right center;
-                                        background-repeat: no-repeat;
-                                        /* opacity: 0.1; */
-                                        border-radius: 10px;
-                                    }
-                                </style>
 
-                                <div class="card-body">
-                                    <div class="row chart-container align-items-center" style="height: 447px">
-                                        <div class="row book-card align-items-center">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-7 row mb-5" style="padding-left: 40px;">
-                                                    <h1 class="fs-1"><b>BOOK YOUR EVENTS NOW!</b></h1>
-                                                    <h6>Book your events now! Secure your date and venue for unforgettable moments.
-                                                        Don’t miss out—let’s make it happen!</h6>
-                                                    <form action="appointment.php">
-                                                        <button class="btn aptn-btn mt-3">Make an Appointment</button>
-                                                    </form>
-                                                    <style>
-                                                        .aptn-btn {
-                                                            background-color: #00A33C !important;
-                                                            color: white;
-                                                            height: 5rem;
-                                                            margin-bottom: -80px;
-                                                            font-size: 1.5rem;
-                                                            width: 100%;
-                                                            border-radius: 10px;
-                                                        }
-                                                    </style>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card card-primary card-round">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
                                 <div class="card-header">
-                                    <div class="card-head-row">
-                                        <div class="card-title fs-2 ms-2">Available Events</div>
-                                        <div class="card-tools">
-                                        </div>
-                                    </div>
-                                    <div class="card-category fs-3 ms-2"><?php echo $currentMonth ?></div>
+                                    <div class="card-title">School Events of 2024</div>
                                 </div>
-                                <div class="card-body pb-0">
-                                    <div class="mb-4 mt-2" id="eventList">
-                                        <ul class="fs-4 ms-4">
-                                            <li>Wedding</li>
-                                            <li>Baptism</li>
-                                            <li>Celebrations</li>
-                                            <li>Funerals</li>
-                                            <li>Community Outreach</li>
-                                            <li>Youth Fellowship</li>
-                                        </ul>
+                                <div class="card-body">
+                                    <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+                                        <canvas id="linechart"></canvas>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <button class="container-fluid btn card card-round justify-content-center" style="height: 100px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#calendarModal">
-                                        <div class="row card-body align-items-center justify-content-between">
-                                            <div class="col mb-3 fs-2 d-flex align-items-center" style="height: 100%;">
-                                                <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
-                                                <span>Public</span>
-                                            </div>
-                                        </div>
-                                    </button>
-                                </div>
-                                <div class="col-md-6">
-                                    <button class="container-fluid btn card card-round justify-content-center" style="height: 100px; border-radius: 10px" data-bs-toggle="modal" data-bs-target="#sc_calendarModal">
-                                        <div class="row card-body align-items-center justify-content-between">
-                                            <div class="col mb-3 fs-2 d-flex align-items-center" style="height: 100%;">
-                                                <i class="bi bi-calendar3 fs-1 me-4" style="margin-top: 3px;"></i>
-                                                <span>School</span>
-                                            </div>
-                                        </div>
-                                    </button>
+                                <div class="card-footer">
+                                    <a class="float-end" role="button" data-bs-toggle="modal" data-bs-target="#sc_calendarModal" style="color: #203b70">See Calendar</a>
                                 </div>
                             </div>
                         </div>
-                    </div> -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Church Events of 2024</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+                                        <canvas id="chlinechart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <a class="float-end" role="button" data-bs-toggle="modal" data-bs-target="#ch_calendarModal"  style="color: #203b70">See Calendar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
@@ -477,6 +432,29 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
             });
 
             $('#sc_calendarModal').on('shown.bs.modal', function() {
+                calendar.render();
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('ch_calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: {
+                    url: 'modal/ch_calendar.php',
+                    method: 'GET',
+                    failure: function() {
+                        alert('Failed to load events!');
+                    },
+                    success: function(data) {
+                        console.log("Loaded events:", data);
+                    }
+                },
+                eventColor: '#00A33C',
+                locale: 'en'
+            });
+
+            $('#ch_calendarModal').on('shown.bs.modal', function() {
                 calendar.render();
             });
         });
@@ -578,8 +556,8 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     type: 'line',
                     width: '100%',
                     height: '107px',
-                    lineColor: 'transparent',
-                    fillColor: 'rgba(63, 119, 226, 0.2)',
+                    lineColor: 'rgba(219, 221, 224, 1)',
+                    fillColor: 'rgba(53, 99, 188, 0.6)',
                     lineWidth: 2,
                     spotColor: '#2ecc71',
                     minSpotColor: '#e74c3c',
@@ -604,20 +582,126 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     width: '100%',
                     height: '107px',
                     lineColor: 'transparent',
-                    fillColor: 'rgba(32, 59, 112, 0.4)',
+                    fillColor: 'rgba(53, 99, 188, 0.6)',
                     lineWidth: 2,
                     spotColor: '#2ecc71',
                     minSpotColor: '#e74c3c',
                     maxSpotColor: '#f39c12',
                     highlightSpotColor: '#3498db',
                     highlightLineColor: '#e74c3c',
-                    tooltipChartTitle: 'Appointments',
-                    spotRadius: 0
+                    tooltipChartTitle: 'Events',
+                    spotRadius: 0,
                 });
             } else {
                 console.error("Invalid data for sparkline", data.values);
             }
         });
+
+        fetch('modal/linechart.php')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(event => event.month);
+                const totalEvents = data.map(event => event.total_events);
+
+                const ctx = document.getElementById('linechart').getContext('2d');
+
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Events Added',
+                            data: totalEvents,
+                            borderColor: 'rgba(32, 59, 112, 0.8)',
+                            backgroundColor: 'rgba(63, 119, 226, 0.2)',
+                            fill: true,
+                            borderWidth: 2,
+                            tension: 0.4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Months',
+                                },
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Events',
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                },
+                            },
+                        },
+                    },
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        fetch('modal/chlinechart.php')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(event => event.month);
+                const totalEvents = data.map(event => event.total_events);
+
+                const ctx = document.getElementById('chlinechart').getContext('2d');
+
+                const chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Events Added',
+                            data: totalEvents,
+                            borderColor: 'rgba(32, 59, 112, 0.8)',
+                            backgroundColor: 'rgba(63, 119, 226, 0.2)',
+                            fill: true,
+                            borderWidth: 2,
+                            tension: 0.4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Months',
+                                },
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Events',
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                },
+                            },
+                        },
+                    },
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
     </script>
 
 </body>

@@ -7,7 +7,7 @@ $sql = "
         SUM(CASE WHEN status = 4 THEN 1 ELSE 0 END) AS completed,
         SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) AS cancelled,
         COUNT(*) AS total
-    FROM appointment WHERE MONTH(start_date) = MONTH(CURRENT_DATE) AND YEAR(start_date) = YEAR(CURRENT_DATE)
+    FROM appointment WHERE MONTH(date_created) = MONTH(CURRENT_DATE) AND YEAR(date_created) = YEAR(CURRENT_DATE)
 ";
 $result = mysqli_query($conn, $sql);
 

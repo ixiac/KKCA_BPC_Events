@@ -3,10 +3,6 @@
 <script src="../assets/js/core/popper.min.js"></script>
 <script src="../assets/js/core/bootstrap.min.js"></script>
 
-<!-- jQuery Scrollbar -->
-<script
-    src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
-
 <!-- Chart JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 

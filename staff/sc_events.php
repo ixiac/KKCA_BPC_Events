@@ -3,30 +3,17 @@
 session_start();
 include("partial/db.php");
 
-// Redirect to login if user is not logged in
-if (!isset($_SESSION['user_no'])) {
-    header("Location: index");
-    exit();
-}
-
-// Fetch user data from the database
-$user_no = $_SESSION['user_no'];
-$query = "SELECT fname, lname, email, username, age FROM accounts WHERE user_no = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_no);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $user = $result->fetch_assoc();
-    $username = $user['username'];
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
+    header("location: ../index");
+    exit;
 } else {
-    header("Location: index");
-    exit();
+    $sql = "SELECT * FROM staff WHERE SFID = '" . $_SESSION['id'] . "'";
+    $result = mysqli_query($conn, $sql);
+    $row = mysqli_fetch_assoc($result);
+    $user_id = $row["SFID"];
 }
 
-// Fetch events from the "sc_events" table
-$events_query = "SELECT * FROM sc_events";
+$events_query = "SELECT * FROM school_events";
 $events_stmt = $conn->prepare($events_query);
 $events_stmt->execute();
 $events_result = $events_stmt->get_result();
@@ -39,6 +26,20 @@ $active = 'history';
 
 <head>
     <?php include("partial/head.php"); ?>
+
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales-all.min.js"></script>
+
+    <link href="https://cdn.datatables.net/v/bm/jqc-1.12.4/dt-2.1.8/datatables.min.css" rel="stylesheet">
+
+    <script src="https://cdn.datatables.net/v/bm/jqc-1.12.4/dt-2.1.8/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="../assets/css/forms.css">
+
+    <link href="../assets/css/calendar.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -48,223 +49,122 @@ $active = 'history';
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <!-- Logo Header -->
-                    <div class="logo-header" data-background-color="dark">
-                        <a href="home" class="logo">
-                            <img src="assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20" />
-                        </a>
-                    </div>
-                    <!-- End Logo Header -->
+                    <?php include("partial/logo-header.php"); ?>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
 
             <div class="container" style="background-color: #dbdde0 !important;">
                 <div class="page-inner">
-                    <div class="row">
-                        <div class="col me-2 d-flex pt-2 pb-4">
-                            <a href="home" style="font-size: 20px; margin-top: 3px; color: gray;">
-                                <i class="fas fa-arrow-left me-2"></i>
-                            </a>
-                            <h3 class="fw-bold mb-3 ms-3">School Events</h3>
+                    <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-1 pb-0">
+                        <div class="row">
+                            <div class="col d-flex pt-2">
+                                <a href="home"
+                                    style="font-size: 20px; margin-top: 3px; color: gray;">
+                                    <i class="fas fa-arrow-left me-2"></i>
+                                </a>
+                                <h3 class="fw-bold mb-3 ms-3">Event History</h3>
+                            </div>
+                        </div>
+                        <div class="ms-md-auto pb-3">
+                            <a data-bs-toggle="modal" data-bs-target="#sc_calendarModal" class="btn" style="color: white; background-color: #203b70; border-radius: 10px">View Calendar</a>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="d-flex align-items-center">
-                                        <h4 class="card-title">Events</h4>
-                                        <button class="btn btn-primary btn-round ms-auto" data-bs-toggle="modal" data-bs-target="#addEventModal">
-                                            <i class="fa fa-plus"></i> Add Event
-                                        </button>
+
+                    <div class="modal fade" id="sc_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="calendarModalLabel">Event Calendar</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="scroll overflow-y-scroll p-2" style="max-height: 84vh">
+                                        <div id="sc_calendar"></div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document" style="width: 50%">
+                            <div class="modal-content" style="background-color: #f2f2f2">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="eventModalLabel">Edit Event</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="eventTitle">Event Title</label>
+                                            <input type="text" class="form-control" id="eventTitle" placeholder="Enter event title">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="eventStart">Start Date</label>
+                                            <input type="datetime-local" class="form-control" id="eventStart">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="eventEnd">End Date</label>
+                                            <input type="datetime-local" class="form-control" id="eventEnd">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" id="deleteEvent">Delete</button>
+                                    <button type="button" class="btn btn-primary" id="saveEvent">Save changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="form-group ps-3">
+                            <label for="yearFilter" class="text-muted">Filter by:</label>
+                            <select id="yearFilter" class="form-control text-muted" style="width: 10%; background-color: #dbdde0; border: 1px solid gray">
+                                <option value="">Year</option>
+                                <?php
+                                $years = [];
+                                $events_result->data_seek(0);
+                                while ($event = $events_result->fetch_assoc()) {
+                                    $year = date('Y', strtotime($event['start_date']));
+                                    if (!in_array($year, $years)) {
+                                        $years[] = $year;
+                                        echo "<option value=\"$year\">$year</option>";
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <a data-bs-toggle="modal" data-bs-target="#sc_calendarModal" class="btn" style="color: white; background-color: #203b70; border-radius: 10px">View Calendar</a>
+
+                        <div class="col-md-12">
+                            <div class="card">
                                 <div class="card-body">
-                                    <!-- Modal for Adding Event -->
-                                    <div class="modal fade" id="addEventModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header border-0">
-                                                    <h5 class="modal-title">Add New Event</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">×</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form action="modal/add_events.php" method="POST">
-                                                        <input type="hidden" name="source" value="sc_events">
-                                                        <input type="hidden" name="return_url" value="../sc_events.php">
-                                                        <div class="row">
-                                                            <div class="form-group">
-                                                                <label>Event Name</label>
-                                                                <input type="text" name="event_name" class="form-control" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label>Category</label>
-                                                                <input type="text" name="category" class="form-control" required>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label>Start Date</label>
-                                                                        <input type="datetime-local" name="start_date" class="form-control" required>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-6">
-                                                                    <div class="form-group">
-                                                                        <label>End Date</label>
-                                                                        <input type="datetime-local" name="end_date" class="form-control" required>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label>Venue</label>
-                                                                <input type="text" name="venue" class="form-control" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label>Registration Fee</label>
-                                                                <input type="number" name="reg_fee" class="form-control" required>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label>Status</label>
-                                                                <select name="status" class="form-control">
-                                                                    <option value="pending">Pending</option>
-                                                                    <option value="completed">Completed</option>
-                                                                    <option value="cancelled">Cancelled</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="modal-footer border-0">
-                                                                <button type="submit" class="btn btn-primary">Add Event</button>
-                                                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Modal for Editing Event -->
-                                    <div class="modal fade" id="editEventModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header border-0">
-                                                    <h5 class="modal-title">Edit Event</h5>
-                                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">×</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form id="editEventForm" action="modal/edit_events.php" method="POST">
-                                                        <input type="hidden" name="source" id="eventSource">
-                                                        <input type="hidden" name="return_url" value="../sc_events.php">
-                                                        <input type="hidden" name="event_id" id="editEventId">
-                                                        <div class="form-group">
-                                                            <label>Event Name</label>
-                                                            <input type="text" name="event_name" class="form-control" id="editEventName" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Category</label>
-                                                            <input type="text" name="category" class="form-control" id="editCategory" required>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>Start Date</label>
-                                                                    <input type="datetime-local" name="start_date" class="form-control" id="editStartDate" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                <div class="form-group">
-                                                                    <label>End Date</label>
-                                                                    <input type="datetime-local" name="end_date" class="form-control" id="editEndDate" required>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Venue</label>
-                                                            <input type="text" name="venue" class="form-control" id="editVenue" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Registration Fee</label>
-                                                            <input type="number" name="reg_fee" class="form-control" id="editRegFee" required>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label>Status</label>
-                                                            <select name="status" class="form-control" id="editStatus">
-                                                                <option value="pending">Pending</option>
-                                                                <option value="completed">Completed</option>
-                                                                <option value="cancelled">Cancelled</option>
-                                                            </select>
-                                                        </div>
-                                                        <div class="modal-footer border-0">
-                                                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <!-- Events Table -->
                                     <div class="table-responsive">
-                                        <table class="table table-striped">
+                                        <table id="multi-filter-select" class="table table-striped table-hover dataTable" style="width:100%">
                                             <thead>
                                                 <tr>
-                                                    <th>Event Name</th>
-                                                    <th>Category</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
-                                                    <th>Venue</th>
-                                                    <th>Registration Fee</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
+                                                    <th class="text-center">Event Name</th>
+                                                    <th class="text-center">Start Date</th>
+                                                    <th class="text-center">End Date</th>
+                                                    <th class="text-center">Attendees</th>
+                                                    <th class="text-center">Budget</th>
+                                                    <th class="text-center">Expenses</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <?php while ($event = $events_result->fetch_assoc()) { ?>
+                                                <?php
+                                                $events_result->data_seek(0);
+                                                while ($event = $events_result->fetch_assoc()) { ?>
                                                     <tr>
-                                                        <td><?php echo htmlspecialchars($event['event_name']); ?></td>
-                                                        <td><?php echo htmlspecialchars($event['category']); ?></td>
-                                                        <td><?php echo htmlspecialchars($event['start_date']); ?></td>
-                                                        <td><?php echo htmlspecialchars($event['end_date']); ?></td>
-                                                        <td><?php echo htmlspecialchars($event['venue']); ?></td>
-                                                        <td><?php echo htmlspecialchars($event['reg_fee']); ?></td>
-                                                        <td>
-                                                            <?php
-                                                            if ($event['status'] == 'completed') {
-                                                                echo '<span class="badge badge-success" style="width: 80px;">Completed</span>';
-                                                            } elseif ($event['status'] == 'pending') {
-                                                                echo '<span class="badge badge-warning" style="width: 80px;">Pending</span>';
-                                                            } elseif ($event['status'] == 'cancelled') {
-                                                                echo '<span class="badge badge-danger" style="width: 80px;">Cancelled</span>';
-                                                            }
-                                                            ?>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-button-action">
-                                                                <button type="button" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
-                                                                    '<?php echo htmlspecialchars($event['EID']); ?>',
-                                                                    '<?php echo htmlspecialchars($event['event_name']); ?>',
-                                                                    '<?php echo htmlspecialchars($event['category']); ?>',
-                                                                    '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
-                                                                    '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
-                                                                    '<?php echo htmlspecialchars($event['venue']); ?>',
-                                                                    '<?php echo htmlspecialchars($event['reg_fee']); ?>',
-                                                                    '<?php echo htmlspecialchars($event['status']); ?>',
-                                                                    'sc_events'
-                                                                )">
-                                                                    <i class="fa fa-edit"></i>
-                                                                </button>
-                                                                <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-                                                                    <i class="fa fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
+                                                        <td class="text-center"><?php echo $event['event_name']; ?></td>
+                                                        <td class="text-center"><?php echo date('F j, Y, g:i A', strtotime($event['start_date'])); ?></td>
+                                                        <td class="text-center"><?php echo date('F j, Y, g:i A', strtotime($event['end_date'])); ?></td>
+                                                        <td class="text-center"><?php echo $event['attendees']; ?></td>
+                                                        <td class="text-center"><?php echo $event['budget']; ?></td>
+                                                        <td class="text-center"><?php echo $event['expenses']; ?></td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
@@ -274,34 +174,170 @@ $active = 'history';
                             </div>
                         </div>
                     </div>
+
+
+                    <script>
+                        $(document).ready(function() {
+                            $('#multi-filter-select').DataTable({
+                                "paging": true,
+                                "searching": true,
+                                "ordering": true,
+                                "info": true,
+                                "lengthChange": true
+                            });
+
+                            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                                var selectedYear = $('#yearFilter').val();
+                                var startDate = data[1];
+                                var eventYear = new Date(startDate).getFullYear();
+
+                                return selectedYear === "" || eventYear == selectedYear;
+                            });
+
+                            $('#yearFilter').on('change', function() {
+                                table.draw();
+                            });
+                        });
+                    </script>
+
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
         </div>
     </div>
 
+    </div>
     <?php include("partial/script.php"); ?>
+
     <script>
-        function openEditModal(eventId, eventName, category, startDate, endDate, venue, regFee, status, source) {
-            document.getElementById('editEventId').value = eventId; // Set the event_id
-            document.getElementById('editEventName').value = eventName;
-            document.getElementById('editCategory').value = category;
-            document.getElementById('editStartDate').value = startDate;
-            document.getElementById('editEndDate').value = endDate;
-            document.getElementById('editVenue').value = venue;
-            document.getElementById('editRegFee').value = regFee;
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('sc_calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev',
+                    center: 'title',
+                    right: 'today next'
+                },
+                events: {
+                    url: 'modal/sc_calendar.php',
+                    method: 'GET',
+                    failure: function() {
+                        Swal.fire('Error', 'Failed to load events!', 'error');
+                    },
+                    success: function(data) {
+                        console.log("Loaded events:", data);
+                    }
+                },
+                locale: 'en',
+                timeZone: 'Asia/Manila',
+                eventColor: '#00A33C',
+                editable: true,
+                eventClick: function(info) {
+                    var event = info.event;
 
-            // Set the selected status in the dropdown
-            const editStatusDropdown = document.getElementById('editStatus');
-            editStatusDropdown.value = status;
+                    $('#eventModal').modal('show');
+                    $('#eventTitle').val(event.title);
+                    $('#eventStart').val(event.start.toISOString().slice(0, 16)); // Local time format
+                    $('#eventEnd').val(event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));
 
-            // Set the source
-            document.getElementById('eventSource').value = source;
+                    $('#saveEvent').off('click').on('click', function() {
+                        var updatedTitle = $('#eventTitle').val();
+                        var updatedStart = $('#eventStart').val();
+                        var updatedEnd = $('#eventEnd').val();
 
-            // Show the edit modal
-            $('#editEventModal').modal('show');
-        }
+                        $.ajax({
+                            url: 'modal/update_scevents.php',
+                            method: 'POST',
+                            data: {
+                                id: event.id,
+                                title: updatedTitle,
+                                start: updatedStart,
+                                end: updatedEnd
+                            },
+                            success: function(response) {
+                                $('#eventModal').modal('hide');
+                                Swal.fire('Success', 'Event updated successfully!', 'success');
+                                calendar.refetchEvents();
+                            },
+                            error: function() {
+                                Swal.fire('Error', 'Failed to update event.', 'error');
+                            }
+                        });
+                    });
+
+                    $('#deleteEvent').off('click').on('click', function() {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This will permanently delete the event.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                            confirmButtonText: 'Yes, delete it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: 'modal/delete_scevents.php',
+                                    method: 'POST',
+                                    data: {
+                                        id: event.id
+                                    },
+                                    success: function(response) {
+                                        $('#eventModal').modal('hide');
+                                        Swal.fire('Deleted!', 'Your event has been deleted.', 'success');
+                                        calendar.refetchEvents();
+                                    },
+                                    error: function() {
+                                        Swal.fire('Error', 'Failed to delete event.', 'error');
+                                    }
+                                });
+                            }
+                        });
+                    });
+                },
+                eventDrop: function(info) {
+                    $.ajax({
+                        url: 'modal/update_scevents.php',
+                        method: 'POST',
+                        data: {
+                            id: info.event.id,
+                            title: info.event.title,
+                            start: info.event.start.toISOString(),
+                            end: info.event.end ? info.event.end.toISOString() : null
+                        },
+                        success: function(response) {
+                            Swal.fire('Success', 'Event moved successfully!', 'success');
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Failed to move event.', 'error');
+                        }
+                    });
+                },
+                eventResize: function(info) {
+                    $.ajax({
+                        url: 'modal/update_scevents.php',
+                        method: 'POST',
+                        data: {
+                            id: info.event.id,
+                            start: info.event.start.toISOString(),
+                            end: info.event.end ? info.event.end.toISOString() : null
+                        },
+                        success: function(response) {
+                            Swal.fire('Success', 'Event resized successfully!', 'success');
+                        },
+                        error: function() {
+                            Swal.fire('Error', 'Failed to resize event.', 'error');
+                        }
+                    });
+                }
+            });
+
+            $('#sc_calendarModal').on('shown.bs.modal', function() {
+                calendar.render();
+            });
+        });
     </script>
-
+</body>
 
 </html>
