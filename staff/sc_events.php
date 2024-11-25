@@ -39,7 +39,7 @@ $active = 'history';
 
     <link rel="stylesheet" href="../assets/css/forms.css">
 
-    <link href="../assets/css/calendar.css" rel="stylesheet" />
+    <link href="../assets/css/calendar.css" rel="stylesheet">
 </head>
 
 <body>
@@ -63,7 +63,7 @@ $active = 'history';
                                     style="font-size: 20px; margin-top: 3px; color: gray;">
                                     <i class="fas fa-arrow-left me-2"></i>
                                 </a>
-                                <h3 class="fw-bold mb-3 ms-3">Event History</h3>
+                                <h3 class="fw-bold mb-3 ms-3">School Events</h3>
                             </div>
                         </div>
                         <div class="ms-md-auto pb-3">
@@ -122,7 +122,7 @@ $active = 'history';
                     <div class="row">
                         <div class="form-group ps-3">
                             <label for="yearFilter" class="text-muted">Filter by:</label>
-                            <select id="yearFilter" class="form-control text-muted" style="width: 10%; background-color: #dbdde0; border: 1px solid gray">
+                            <select id="yearFilter" class="form-control text-muted" style="width: 5%; background-color: #dbdde0; border: 1px solid gray;">
                                 <option value="">Year</option>
                                 <?php
                                 $years = [];
@@ -137,10 +137,14 @@ $active = 'history';
                                 ?>
                             </select>
                         </div>
-                        <a data-bs-toggle="modal" data-bs-target="#sc_calendarModal" class="btn" style="color: white; background-color: #203b70; border-radius: 10px">View Calendar</a>
 
                         <div class="col-md-12">
                             <div class="card">
+                                <div class="card-header">
+                                    <a class="btn btn-round float-end" style="color: white; background-color: #203b70;">
+                                        Add Events
+                                    </a>
+                                </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table id="multi-filter-select" class="table table-striped table-hover dataTable" style="width:100%">
@@ -160,8 +164,14 @@ $active = 'history';
                                                 while ($event = $events_result->fetch_assoc()) { ?>
                                                     <tr>
                                                         <td class="text-center"><?php echo $event['event_name']; ?></td>
-                                                        <td class="text-center"><?php echo date('F j, Y, g:i A', strtotime($event['start_date'])); ?></td>
-                                                        <td class="text-center"><?php echo date('F j, Y, g:i A', strtotime($event['end_date'])); ?></td>
+                                                        <td class="text-center">
+                                                            <span style="display: none;"><?php echo strtotime($event['start_date']); ?></span>
+                                                            <?php echo date('F j, Y, g:i A', strtotime($event['start_date'])); ?>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span style="display: none;"><?php echo strtotime($event['end_date']); ?></span>
+                                                            <?php echo date('F j, Y, g:i A', strtotime($event['end_date'])); ?>
+                                                        </td>
                                                         <td class="text-center"><?php echo $event['attendees']; ?></td>
                                                         <td class="text-center"><?php echo $event['budget']; ?></td>
                                                         <td class="text-center"><?php echo $event['expenses']; ?></td>
