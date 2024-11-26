@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="../assets/css/scroll.css">
 
 <style>
-    body {
+    html body {
         font-family: "Trebuchet MS", sans-serif;
     }
 </style>

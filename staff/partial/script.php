@@ -3,6 +3,9 @@
 <script src="../assets/js/core/popper.min.js"></script>
 <script src="../assets/js/core/bootstrap.min.js"></script>
 
+<!-- JS Scrollbar -->
+<script src="../assets/js/plugin/jquery-scrollbar/jquery.scrollbar.min.js"></script>
+
 <!-- Chart JS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -21,13 +24,7 @@
 <script src="../assets/js/plugin/jsvectormap/world.js"></script>
 
 <!-- Sweet Alert -->
-<script src="../assets/js/plugin/sweetalert/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <!-- Kaiadmin JS -->
 <script src="../assets/js/kaiadmin.min.js"></script>
-
-<!-- Kaiadmin DEMO methods, don't include it in your project! -->
-<script src="../assets/js/setting-demo.js"></script>
-<script src="../assets/js/demo.js"></script>
-
-<script src="../assets/js/av-events-dropdown.js"></script>

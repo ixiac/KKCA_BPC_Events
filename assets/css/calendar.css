@@ -19,10 +19,10 @@
     color: white !important;
 }
 
-.modal-dialog {
+/* .modal-dialog {
     max-width: 80%;
     margin: 30px auto;
-}
+} */
 
 #calendar {
     width: 100%;
@@ -30,9 +30,9 @@
 }
 
 @media (max-width: 768px) {
-    .modal-dialog {
+    /* .modal-dialog {
         max-width: 90%;
-    }
+    } */
 
     #calendar {
         height: auto;

@@ -43,13 +43,75 @@ $active = 'history';
 </head>
 
 <body>
+
+    <!-- Edit Event Modal -->
+    <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="width: 30%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editEventForm">
+                        <input type="hidden" id="editEventId" name="SCID">
+                        <div class="mb-5 px-3">
+                            <label for="editEventName" class="form-label">Event Name</label>
+                            <input type="text" class="form-control" id="editEventName" name="eventName" required>
+                        </div>
+                        <div class="row mb-3 px-3">
+                            <div class="col-md-6">
+                                <label for="editStartDate" class="form-label">Start Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="editStartDate" name="startDate" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editEndDate" class="form-label">End Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="editEndDate" name="endDate" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="editAttendees" class="form-label">Attendees</label>
+                            <input type="number" class="form-control" id="editAttendees" name="attendees" required>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="editBudget" class="form-label">Budget</label>
+                            <input type="number" class="form-control" id="editBudget" name="budget" required>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="editExpenses" class="form-label">Expenses</label>
+                            <input type="number" class="form-control" id="editExpenses" name="expenses" required>
+                        </div>
+                        <div class="row justify-content-center mt-5 mb-3">
+                            <button type="submit" class="btn" style="background-color: #00A33C; color: white; width: 25%" form="editEventForm">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="wrapper">
         <?php include("partial/sidebar.php"); ?>
 
         <div class="main-panel">
             <div class="main-header">
                 <div class="main-header-logo">
-                    <?php include("partial/logo-header.php"); ?>
+                    <div class="logo-header" data-background-color="dark">
+                        <a href="../index.html" class="logo">
+                            <img src="../assets/img/BPC-logo.png" alt="navbar brand" class="navbar-brand" height="20">
+                        </a>
+                        <div class="nav-toggle">
+                            <button class="btn btn-toggle toggle-sidebar">
+                                <i class="gg-menu-right"></i>
+                            </button>
+                            <button class="btn btn-toggle sidenav-toggler">
+                                <i class="gg-menu-left"></i>
+                            </button>
+                        </div>
+                        <button class="topbar-toggler more">
+                            <i class="gg-more-vertical-alt"></i>
+                        </button>
+                    </div>
                 </div>
                 <?php include("partial/navbar.php"); ?>
             </div>
@@ -72,7 +134,7 @@ $active = 'history';
                     </div>
 
                     <div class="modal fade" id="sc_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
+                        <div class="modal-dialog modal-lg" style="width: 80%;">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="calendarModalLabel">Event Calendar</h5>
@@ -147,7 +209,7 @@ $active = 'history';
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table id="multi-filter-select" class="table table-striped table-hover dataTable" style="width:100%">
+                                        <table id="multi-filter-select" class="table table-striped table-hover dataTable">
                                             <thead>
                                                 <tr>
                                                     <th class="text-center">Event Name</th>
@@ -156,6 +218,7 @@ $active = 'history';
                                                     <th class="text-center">Attendees</th>
                                                     <th class="text-center">Budget</th>
                                                     <th class="text-center">Expenses</th>
+                                                    <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -175,6 +238,25 @@ $active = 'history';
                                                         <td class="text-center"><?php echo $event['attendees']; ?></td>
                                                         <td class="text-center"><?php echo $event['budget']; ?></td>
                                                         <td class="text-center"><?php echo $event['expenses']; ?></td>
+                                                        <td class="text-center">
+                                                            <div class="form-button-action">
+                                                                <button type="button" title="Edit" class="btn btn-link btn-lg" style="color: #203b70;"
+                                                                    onclick="openEditModal(
+                                                                        '<?php echo htmlspecialchars($event['SCID']); ?>',
+                                                                        '<?php echo htmlspecialchars($event['event_name']); ?>',
+                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
+                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
+                                                                        '<?php echo htmlspecialchars($event['attendees']); ?>',
+                                                                        '<?php echo htmlspecialchars($event['budget']); ?>',
+                                                                        '<?php echo htmlspecialchars($event['expenses']); ?>'
+                                                                    )">
+                                                                    <i class="fa fa-edit"></i>
+                                                                </button>
+                                                                <button type="button" data-bs-toggle="tooltip" title="Remove" class="btn btn-link btn-danger" onclick="deleteEvent('<?php echo htmlspecialchars($event['SCID']); ?>')">
+                                                                    <i class="fa fa-times"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
@@ -193,7 +275,11 @@ $active = 'history';
                                 "searching": true,
                                 "ordering": true,
                                 "info": true,
-                                "lengthChange": true
+                                "lengthChange": true,
+                                columnDefs: [{
+                                    orderable: false,
+                                    targets: [6]
+                                }]
                             });
 
                             $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
@@ -218,6 +304,83 @@ $active = 'history';
 
     </div>
     <?php include("partial/script.php"); ?>
+
+    <script>
+        function openEditModal(SCID, eventName, startDate, endDate, attendees, budget, expenses) {
+            document.getElementById('editEventId').value = SCID;
+            document.getElementById('editEventName').value = eventName;
+            document.getElementById('editStartDate').value = startDate;
+            document.getElementById('editEndDate').value = endDate;
+            document.getElementById('editAttendees').value = attendees;
+            document.getElementById('editBudget').value = budget;
+            document.getElementById('editExpenses').value = expenses;
+
+            var editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
+            editEventModal.show();
+        }
+
+        document.getElementById('editEventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const SCID = document.getElementById('editEventId').value;
+            const eventName = document.getElementById('editEventName').value;
+            const startDate = document.getElementById('editStartDate').value;
+            const endDate = document.getElementById('editEndDate').value;
+            const attendees = document.getElementById('editAttendees').value;
+            const budget = document.getElementById('editBudget').value;
+            const expenses = document.getElementById('editExpenses').value;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to save these changes?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00A33C',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, save it!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('modal/edit_events.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: new URLSearchParams({
+                                SCID: SCID,
+                                event_name: eventName,
+                                start_date: startDate,
+                                end_date: endDate,
+                                attendees: attendees,
+                                budget: budget,
+                                expenses: expenses
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                bootstrap.Modal.getInstance(document.getElementById('editEventModal')).hide();
+
+                                Swal.fire({
+                                    title: 'Saved!',
+                                    text: 'Your changes have been saved.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#00A33C',
+                                });
+
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 2000);
+                            } else {
+                                Swal.fire('Error!', 'Failed to save changes.', 'error');
+                            }
+                        })
+                        .catch(err => {
+                            Swal.fire('Error!', 'An error occurred while saving.', 'error');
+                        });
+                }
+            });
+        });
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -248,7 +411,7 @@ $active = 'history';
 
                     $('#eventModal').modal('show');
                     $('#eventTitle').val(event.title);
-                    $('#eventStart').val(event.start.toISOString().slice(0, 16)); // Local time format
+                    $('#eventStart').val(event.start.toISOString().slice(0, 16));
                     $('#eventEnd').val(event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));
 
                     $('#saveEvent').off('click').on('click', function() {
