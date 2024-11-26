@@ -26,6 +26,6 @@
 
 <style>
     body {
-        font-family: "Trebuchet MS", sans-serif;
+        font-family: "Trebuchet MS", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons";
     }
 </style>
