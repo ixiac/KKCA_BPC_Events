@@ -37,6 +37,8 @@ $active = 'history';
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="stylesheet" href="../assets/css/forms.css">
 
     <link href="../assets/css/calendar.css" rel="stylesheet">
@@ -86,6 +88,55 @@ $active = 'history';
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div class="modal fade" id="addEventModal" tabindex="-1" aria-labelledby="addEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="width: 30%">
+            <div class="modal-content">
+                <form id="addEventForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEventModalLabel">Add New Event</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3 px-3">
+                            <label for="event_name" class="form-label">Event Name</label>
+                            <input type="text" class="form-control" id="event_name" name="event_name" required>
+                        </div>
+                        <div class="row mb-3 px-1">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Start Date</label>
+                                    <input type="datetime-local" name="start_date" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>End Date</label>
+                                    <input type="datetime-local" name="start_date" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="attendees" class="form-label">Attendees</label>
+                            <input type="number" class="form-control" id="attendees" name="attendees" required>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="budget" class="form-label">Budget</label>
+                            <input type="number" class="form-control" id="budget" name="budget" required>
+                        </div>
+                        <div class="mb-3 px-3">
+                            <label for="expenses" class="form-label">Expenses</label>
+                            <input type="number" class="form-control" id="expenses" name="expenses" required>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center pb-5">
+                        <button type="submit" class="btn" style="background-color: #00a33c; width: 25%; color: white;">Submit</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -203,7 +254,8 @@ $active = 'history';
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <a class="btn btn-round float-end" style="color: white; background-color: #203b70;">
+                                    <a class="btn btn-round float-end" style="color: white; background-color: #203b70;"
+                                        data-bs-toggle="modal" data-bs-target="#addEventModal">
                                         Add Events
                                     </a>
                                 </div>
@@ -252,7 +304,8 @@ $active = 'history';
                                                                     )">
                                                                     <i class="fa fa-edit"></i>
                                                                 </button>
-                                                                <button type="button" data-bs-toggle="tooltip" title="Remove" class="btn btn-link btn-danger" onclick="deleteEvent('<?php echo htmlspecialchars($event['SCID']); ?>')">
+                                                                <button type="button" title="Remove" class="btn btn-link btn-danger"
+                                                                    onclick="confirmDelete('<?php echo htmlspecialchars($event['SCID']); ?>')">
                                                                     <i class="fa fa-times"></i>
                                                                 </button>
                                                             </div>
@@ -260,6 +313,7 @@ $active = 'history';
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>
@@ -379,6 +433,89 @@ $active = 'history';
                         });
                 }
             });
+        });
+
+        function confirmDelete(eventId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#00a33c',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    deleteEvent(eventId);
+                }
+            });
+        }
+
+        function deleteEvent(eventId) {
+            $.ajax({
+                url: 'modal/delete_scevents.php',
+                type: 'POST',
+                data: {
+                    id: eventId
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status === 'success') {
+                        Swal.fire('Deleted!', response.message, 'success').then(() => {
+
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        });
+                    } else {
+                        Swal.fire('Error!', response.message, 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error!', 'An unexpected error occurred.', 'error');
+                }
+            });
+        }
+
+        document.getElementById('addEventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('modal/add_scevents.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Event Added',
+                            text: 'The event has been successfully added!',
+                            confirmButtonColor: '#203b70'
+                        }).then(() => {
+                            document.querySelector('#addEventModal .btn-close').click();
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to add the event. Please try again.',
+                            confirmButtonColor: '#203b70'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'An unexpected error occurred. Please try again.',
+                        confirmButtonColor: '#203b70'
+                    });
+                });
         });
     </script>
 
