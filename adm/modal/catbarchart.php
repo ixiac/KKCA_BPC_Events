@@ -18,9 +18,10 @@ $data = [
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $data['categories'][] = $row['category'];
-        $data['counts'][] = $row['count'];
+        $data['counts'][] = (int) $row['count'];
     }
 }
 
+header('Content-Type: application/json');
 echo json_encode($data);
 ?>

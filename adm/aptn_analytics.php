@@ -265,12 +265,12 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     </div>
 
                     <div class="row pb-5">
-                        <div class="col-md-6 d-flex flex-column">
+                        <div class="col-md-5 d-flex flex-column">
                             <div class="card flex-fill">
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="col card-title">Appointment Statuses</div>
-                                        <div class="col card-title text-end"><?php echo $currentMonth; ?></div>
+                                        <div class="col card-title text-end"></div>
                                     </div>
                                 </div>
                                 <div class="card-body d-flex flex-column justify-content-between align-items-center">
@@ -282,7 +282,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                             </div>
                         </div>
 
-                        <div class="col-md-6 d-flex flex-column">
+                        <div class="col-md-7 d-flex flex-column">
                             <div class="card flex-fill">
                                 <div class="card-header">
                                     <div class="row">
@@ -291,7 +291,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     </div>
                                 </div>
                                 <div class="card-body d-flex flex-column justify-content-between align-items-center">
-                                    <div id="pie-alert-container"></div>
+                                    <div id="cat-alert-container"></div>
                                     <div class="chart-container d-flex justify-content-center align-items-center w-100">
                                         <canvas id="cbarchart"></canvas>
                                     </div>
@@ -299,6 +299,33 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                             </div>
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Line Chart</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
+                                        <canvas id="linechart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="card-title">Trend Over time Analysis</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tota-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
             <?php include("partial/footer.php"); ?>
@@ -335,6 +362,16 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
 
                 const alertContainer = document.getElementById('pie-alert-container');
                 alertContainer.innerHTML = '';
+
+                if (pendingPercentage > 20) {
+                    alertContainer.innerHTML += `
+                <div class="alert alert-danger text-center">
+                    Action Required: More than 20% of appointments are pending! 
+                    Too much pending requests can lead to delays in scheduling, 
+                    frustration among customers, and potential loss of trust in the appointment system. 
+                </div>
+            `;
+                }
 
                 const canvas = document.getElementById('piechart');
                 if (!canvas) {
@@ -404,6 +441,24 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     counts
                 } = data;
 
+                const maxCount = Math.max(...counts);
+                const minCount = Math.min(...counts);
+                const topCategoryIndex = counts.indexOf(maxCount);
+                const lowestCategoryIndex = counts.indexOf(minCount);
+
+                const topCategory = categories[topCategoryIndex];
+                const lowestCategory = categories[lowestCategoryIndex];
+
+                const recommendationContainer = document.getElementById('cat-alert-container');
+                recommendationContainer.innerHTML = `
+            <div class="alert alert-success text-center">
+                <strong>Top Category: ${topCategory}</strong> - This event type is very popular. Consider adding more time slots or resources to accommodate the demand.
+            </div>
+            <div class="alert alert-danger text-center">
+                <strong>Lowest Category: ${lowestCategory}</strong> - This event type has lower engagement. Encourage members to participate through announcements, special sermons, or promotions.
+            </div>
+        `;
+
                 const canvas = document.getElementById('cbarchart');
                 if (!canvas) {
                     console.error('Canvas element not found');
@@ -467,6 +522,97 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                 });
             })
             .catch(error => console.error('Error fetching category data:', error));
+
+        fetch('modal/linechart.php')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Fetched Data:', data);
+
+                if (!data || !Array.isArray(data) || data.length === 0) {
+                    console.error('Data format issue or no data returned:', data);
+                    document.querySelector('.tota-container').innerHTML = `
+                <p><strong>Error: No valid data available.</strong></p>`;
+                    return;
+                }
+
+                const labels = data.map(event => event.month || 'Unknown');
+                const totalEvents = data.map(event => parseInt(event.total_events) || 0);
+
+                console.log('Labels:', labels);
+                console.log('Total Events:', totalEvents);
+
+                if (labels.includes('Unknown') || totalEvents.includes(0)) {
+                    console.warn('Some months or event totals are invalid:', labels, totalEvents);
+                }
+
+                let maxIndex = totalEvents.indexOf(Math.max(...totalEvents));
+                let minIndex = totalEvents.indexOf(Math.min(...totalEvents));
+
+                const highestMonth = labels[maxIndex];
+                const lowestMonth = labels[minIndex];
+                const highestValue = totalEvents[maxIndex];
+                const lowestValue = totalEvents[minIndex];
+
+                const totaContainer = document.querySelector('.tota-container');
+                totaContainer.innerHTML = `
+            <p><strong>Month with the highest events:</strong> ${highestMonth} (${highestValue} events)</p>
+            <p><strong>Month with the lowest events:</strong> ${lowestMonth} (${lowestValue} events)</p>
+            <p><strong>Recommendations:</strong></p>
+            <ul>
+                <li><strong>For ${highestMonth}:</strong> Maintain the strategies that contributed to its success. Consider scaling promotional efforts.</li>
+                <li><strong>For ${lowestMonth}:</strong> Investigate the reasons for low engagement. Plan campaigns, offer incentives, or schedule additional events.</li>
+            </ul>
+        `;
+
+                const ctx = document.getElementById('linechart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Events Added',
+                            data: totalEvents,
+                            borderColor: 'rgba(32, 59, 112, 0.8)',
+                            backgroundColor: 'rgba(63, 119, 226, 0.6)',
+                            fill: true,
+                            borderWidth: 2,
+                            tension: 0.5,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top',
+                            },
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Months',
+                                },
+                            },
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of Events',
+                                },
+                                ticks: {
+                                    stepSize: 1
+                                },
+                            },
+                        },
+                    },
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.querySelector('.tota-container').innerHTML = `
+            <p><strong>Error fetching data. Please try again later.</strong></p>`;
+            });
     </script>
 
 </body>

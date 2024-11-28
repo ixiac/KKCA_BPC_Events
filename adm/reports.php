@@ -580,14 +580,14 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             })
             .catch(error => console.error('Error fetching status data:', error));
 
-        fetch('modal/donation.php') // Update this path to your PHP file
+        fetch('modal/donation.php')
             .then(response => response.json())
             .then(data => {
                 const months = data.monthly_data.map(event => event.month);
                 const donations = data.monthly_data.map(event => event.total_donations);
                 const budgets = data.monthly_data.map(event => event.total_budget);
 
-                // Create the chart
+                
                 const ctx = document.getElementById('donationchart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
