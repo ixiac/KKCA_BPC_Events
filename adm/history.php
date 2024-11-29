@@ -24,7 +24,7 @@ $events_query = "
             ELSE 'Unknown' 
         END AS event_by_username
     FROM appointment e
-    LEFT JOIN admin cm ON e.event_by = ad.AID
+    LEFT JOIN admin ad ON e.event_by = ad.AID
     LEFT JOIN church_mem cm ON e.event_by = cm.CMID
     LEFT JOIN student s ON e.event_by = s.SID
     LEFT JOIN customer c ON e.event_by = c.CID
