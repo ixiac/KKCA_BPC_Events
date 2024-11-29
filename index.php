@@ -223,7 +223,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Wedding</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">30,000</span>
                   <span class="text text-dark">+</span>
                 </div>
               </div>
@@ -235,7 +235,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">5,000-15,000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -258,7 +258,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Baptism</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">1,500</span>
                   <span class="text text-dark">+</span>
                 </div>
               </div>
@@ -270,42 +270,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Coordinators</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">On-site Assistance</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 pe-md-0">
-            <div class="card card-pricing">
-              <div class="card-header">
-                <h4 class="card-title">Receptions</h4>
-                <div class="card-price">
-                  <span class="price">15,000</span>
-                  <span class="text text-dark">+</span>
-                </div>
-              </div>
-              <div class="card-body">
-                <ul class="specification-list">
-                  <li>
-                    <span class="name-specification">Negotiable</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-1,500</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -365,7 +330,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Youth Fellowship</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">3,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -377,11 +342,11 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-5,000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
+                    <span class="status-specification">Any</span>
                   </li>
                   <li>
                     <span class="name-specification">Coordinators</span>
@@ -400,7 +365,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Funerals</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">4,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -412,7 +377,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-3000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -435,7 +400,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Community Outreach</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">3,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -447,11 +412,11 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">500-1,500</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
+                    <span class="status-specification">Any</span>
                   </li>
                   <li>
                     <span class="name-specification">Coordinators</span>
