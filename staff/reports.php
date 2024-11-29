@@ -91,7 +91,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Line Chart</div>
+                                    <div class="card-title">Trend over time analysis</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
@@ -105,7 +105,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Multiple Line Chart</div>
+                                    <div class="card-title">Trend over time analysis by category</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
@@ -580,14 +580,13 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
             })
             .catch(error => console.error('Error fetching status data:', error));
 
-        fetch('modal/donation.php') // Update this path to your PHP file
+        fetch('modal/donation.php')
             .then(response => response.json())
             .then(data => {
                 const months = data.monthly_data.map(event => event.month);
                 const donations = data.monthly_data.map(event => event.total_donations);
                 const budgets = data.monthly_data.map(event => event.total_budget);
 
-                // Create the chart
                 const ctx = document.getElementById('donationchart').getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
@@ -633,7 +632,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                     }
                 });
 
-                // Display the total donations, total budget, and the overall recommendation
                 document.getElementById('total_donations').innerHTML = `Total Donations: ${data.total_donations}`;
                 document.getElementById('total_budget').innerHTML = `Total Budget: ${data.total_budget}`;
                 document.getElementById('recommendation').innerHTML = `<h3>Overall Recommendation:</h3><p>${data.recommendation}</p>`;
