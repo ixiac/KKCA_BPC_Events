@@ -146,11 +146,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-secondary me-3">
-                                        <i class="fa fa-dollar-sign"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#"><?php echo number_format($appointment_tcount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Total Appointments</small>
@@ -161,11 +158,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-success me-3">
-                                        <i class="fa fa-shopping-cart"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#"><?php echo number_format($appointment_ycount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments this year</small>
@@ -176,11 +170,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-danger me-3">
-                                        <i class="fa fa-users"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#"><?php echo number_format($appointment_mcount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments this month</small>
@@ -191,11 +182,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-warning me-3">
-                                        <i class="fa fa-comment-alt"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#"><?php echo number_format($daily_aptn); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments today</small>

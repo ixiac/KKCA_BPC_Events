@@ -92,11 +92,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-secondary me-3">
-                                        <i class="fa fa-dollar-sign"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#">₱<?php echo number_format($total_amount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Total Transactions</small>
@@ -107,11 +104,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-success me-3">
-                                        <i class="fa fa-shopping-cart"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#">₱<?php echo number_format($total_amount_year); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Transactions this year</small>
@@ -122,11 +116,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-danger me-3">
-                                        <i class="fa fa-users"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#">₱<?php echo number_format($total_amount_month); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Transactions this month</small>
@@ -137,11 +128,8 @@ $active = "analytics";
                         <div class="col-sm-6 col-lg-3">
                             <div class="card p-3">
                                 <div class="d-flex align-items-center">
-                                    <span class="stamp stamp-md bg-warning me-3">
-                                        <i class="fa fa-comment-alt"></i>
-                                    </span>
                                     <div>
-                                        <h5 class="mb-1">
+                                        <h5 class="mb-1 ps-2">
                                             <b><a href="#">₱<?php echo number_format($total_amount_today); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Transactions today</small>
@@ -334,6 +322,7 @@ $active = "analytics";
             let expCostTrend = '';
             let totalCostTrend = '';
 
+            // Determine trends for expense and total costs
             if (exp_costs[exp_costs.length - 1] > exp_costs[0]) {
                 expCostTrend = 'increasing';
             } else if (exp_costs[exp_costs.length - 1] < exp_costs[0]) {
@@ -350,17 +339,32 @@ $active = "analytics";
                 totalCostTrend = 'stable';
             }
 
-            analysis += `<p><strong>Expense Cost Trend:</strong> The expense cost has been ${expCostTrend} over the years.`;
-            analysis += `<p><strong>Total Cost Trend:</strong> The total cost has been ${totalCostTrend} over the years.</p>`;
+            // Calculate profit margin trends
+            const profitMargins = total_costs.map((total, index) => total - exp_costs[index]);
+            const profitMarginTrend = profitMargins[profitMargins.length - 1] > profitMargins[0] ?
+                'increasing' :
+                profitMargins[profitMargins.length - 1] < profitMargins[0] ?
+                'decreasing' :
+                'stable';
 
-            if (expCostTrend === 'increasing' && totalCostTrend === 'increasing') {
-                analysis += `<p><strong>Recommendation:</strong> Both expense and total costs are increasing. It is recommended to analyze the cause of rising expenses and consider optimizing processes to reduce costs in the future.</p>`;
-            } else if (expCostTrend === 'decreasing' && totalCostTrend === 'decreasing') {
-                analysis += `<p><strong>Recommendation:</strong> Both expense and total costs are decreasing, which is a positive trend. Continue monitoring the costs to ensure they stay under control.</p>`;
-            } else if (expCostTrend === 'stable' && totalCostTrend === 'increasing') {
-                analysis += `<p><strong>Recommendation:</strong> Total costs are rising while expenses remain stable. It may be beneficial to explore factors contributing to the rise in total costs, such as overheads or external factors.</p>`;
-            } else if (expCostTrend === 'increasing' && totalCostTrend === 'stable') {
-                analysis += `<p><strong>Recommendation:</strong> If expenses are rising while total costs remain stable, it might indicate inefficiencies in cost allocation or areas where savings can be made. A deeper review of cost distribution is advised.</p>`;
+            // Basic analysis of trends
+            analysis += `<p><strong>Expense Cost Trend:</strong> The expense cost has been ${expCostTrend} over the years.</p>`;
+            analysis += `<p><strong>Total Cost Trend:</strong> The total cost has been ${totalCostTrend} over the years.</p>`;
+            analysis += `<p><strong>Profit Margin Trend:</strong> The profit margin has been ${profitMarginTrend} over the years.</p>`;
+
+            // Strategy analysis based on trends
+            if (expCostTrend === 'increasing' && totalCostTrend === 'increasing' && profitMarginTrend === 'decreasing') {
+                analysis += `<p><strong>Strategic Analysis:</strong> Rising expenses and total costs are eroding profit margins. Prioritize cost optimization strategies, such as automating manual processes, outsourcing non-core functions, or streamlining supply chains.</p>`;
+            } else if (expCostTrend === 'decreasing' && totalCostTrend === 'stable' && profitMarginTrend === 'increasing') {
+                analysis += `<p><strong>Strategic Analysis:</strong> Decreasing expenses with stable total costs have positively impacted profit margins. Invest in scaling operations, marketing, or innovation to capitalize on this trend while maintaining cost efficiency.</p>`;
+            } else if (expCostTrend === 'stable' && totalCostTrend === 'increasing' && profitMarginTrend === 'stable') {
+                analysis += `<p><strong>Strategic Analysis:</strong> While expenses remain stable, rising total costs with no significant impact on profit margins suggest inefficiencies in value generation. Consider revisiting pricing models or expanding high-margin product offerings.</p>`;
+            } else if (expCostTrend === 'decreasing' && totalCostTrend === 'decreasing' && profitMarginTrend === 'stable') {
+                analysis += `<p><strong>Strategic Analysis:</strong> Both expenses and total costs are declining, but profit margins remain stable. Explore opportunities to expand into new markets or enhance current product/service value propositions to boost overall growth.</p>`;
+            } else if (expCostTrend === 'increasing' && totalCostTrend === 'stable' && profitMarginTrend === 'decreasing') {
+                analysis += `<p><strong>Strategic Analysis:</strong> Increasing expenses without a rise in total costs is leading to reduced profit margins. Focus on scrutinizing expense categories for potential savings and optimizing operational efficiency.</p>`;
+            } else if (expCostTrend === 'stable' && totalCostTrend === 'stable' && profitMarginTrend === 'stable') {
+                analysis += `<p><strong>Strategic Analysis:</strong> Stable trends across expenses, total costs, and profit margins provide an opportunity to experiment with strategic initiatives, such as enhancing customer acquisition channels or diversifying revenue streams.</p>`;
             }
 
             return analysis;
