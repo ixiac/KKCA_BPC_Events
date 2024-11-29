@@ -13,22 +13,21 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $user_id = $row["AID"];
 }
 
-$events_query = "SELECT 
-    e.*,
-    ad.AID AS admin_id,
-    ad.username AS admin_username,
-    CASE 
-        WHEN e.event_by LIKE 'AD%' THEN ad.username
-        WHEN e.event_by LIKE 'CM%' THEN cm.username
-        WHEN e.event_by LIKE 'S%' THEN s.username
-        WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
-        ELSE 'Unknown' 
-    END AS event_by_username
-FROM appointment e
-LEFT JOIN admin ad ON e.event_by = ad.AID
-LEFT JOIN church_mem cm ON e.event_by = cm.CMID
-LEFT JOIN student s ON e.event_by = s.SID
-LEFT JOIN customer c ON e.event_by = c.CID;
+$events_query = "
+    SELECT 
+        e.*, 
+        CASE
+            WHEN e.event_by LIKE 'AD%' THEN ad.username
+            WHEN e.event_by LIKE 'CM%' THEN cm.username
+            WHEN e.event_by LIKE 'S%' THEN s.username
+            WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
+            ELSE 'Unknown' 
+        END AS event_by_username
+    FROM appointment e
+    LEFT JOIN admin ad ON e.event_by = ad.AID
+    LEFT JOIN church_mem cm ON e.event_by = cm.CMID
+    LEFT JOIN student s ON e.event_by = s.SID
+    LEFT JOIN customer c ON e.event_by = c.CID
 ";
 
 $events_stmt = $conn->prepare($events_query);
