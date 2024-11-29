@@ -13,11 +13,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $user_id = $row["AID"];
 }
 
-$events_query = "SELECT 
-    e.event_by,
-    ad.AID AS admin_id,
-    ad.username AS admin_username,
-    CASE 
+$events_query = "SELECT e.*, CASE 
         WHEN e.event_by LIKE 'AD%' THEN ad.username
         WHEN e.event_by LIKE 'CM%' THEN cm.username
         WHEN e.event_by LIKE 'S%' THEN s.username
