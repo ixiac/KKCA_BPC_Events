@@ -536,56 +536,6 @@ $loggedIn = isset($_SESSION["id"]);
     </div>
   </section>
 
-  <!-- Contact Page -->
-  <section id="contact-page" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold" style="color: #00A33C;">Get In Touch</h1>
-        <p class="fs-4 text-muted">Feel free to reach out to us for any queries or assistance. We're here to help!</p>
-      </div>
-      <div class="row g-5">
-        <!-- Contact Form -->
-        <div class="col-lg-6">
-          <div class="card-primary p-5 rounded shadow">
-            <form>
-              <div class="mb-4">
-                <label for="name" class="form-label fw-bold">Your Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter your name" />
-              </div>
-              <div class="mb-4">
-                <label for="email" class="form-label fw-bold">Your Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter your email" />
-              </div>
-              <div class="mb-4">
-                <label for="message" class="form-label fw-bold">Your Message</label>
-                <textarea class="form-control" id="message" rows="5" placeholder="Type your message"></textarea>
-              </div>
-              <button type="submit" class="btn btn-lg text-white" style="background-color: #00A33C;">Send Message</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Contact Details -->
-        <div class="col-lg-6">
-          <div class="bg-white p-5 rounded shadow">
-            <h3 class="fw-bold mb-4" style="color: #00A33C;">Contact Information</h3>
-            <p class="fs-5 mb-3"><i class="bi bi-geo-alt-fill me-3"></i> Gloria Marris St. Cuta, Batangas City</p>
-            <p class="fs-5 mb-3"><i class="bi bi-envelope-fill me-3"></i> kkca.bpc.events@gmail.com</p>
-            <p class="fs-5 mb-3"><i class="bi bi-telephone-fill me-3"></i> +0916 743 6785</p>
-            <hr class="my-4">
-            <h3 class="fw-bold mb-4" style="color: #00A33C;">Follow Us</h3>
-            <div>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-instagram"></i></a>
-              <a href="#" class="text-dark fs-4"><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
 
   <!-- Footer Page -->
   <section id="contact">
