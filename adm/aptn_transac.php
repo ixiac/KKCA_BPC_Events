@@ -17,12 +17,16 @@ $events_query = "
     SELECT 
         e.*, 
         CASE 
+            WHEN e.event_by LIKE 'AD%' THEN ad.username
+            WHEN e.event_by LIKE 'SF%' THEN sf.username
             WHEN e.event_by LIKE 'CM%' THEN cm.username
             WHEN e.event_by LIKE 'S%' THEN s.username
             WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
             ELSE 'Unknown' 
         END AS event_by_username
     FROM appointment e
+    LEFT JOIN admin ad ON e.event_by = ad.AID
+    LEFT JOIN staff sf ON e.event_by = sf.SFID
     LEFT JOIN church_mem cm ON e.event_by = cm.CMID
     LEFT JOIN student s ON e.event_by = s.SID
     LEFT JOIN customer c ON e.event_by = c.CID
@@ -274,6 +278,10 @@ $active = 'history';
                                                                 onclick="cancelEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
                                                                 <i class="fa fa-ban"></i>
                                                             </button>
+                                                            <button type="button" title="Enter Total Cost" class="btn btn-link btn-primary"
+                                                                onclick="changeCost('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['total_cost']); ?>')">
+                                                                <i class="fas fa-clipboard-check"></i>
+                                                            </button>
                                                             <button type="button" title="Remove" class="btn btn-link btn-danger"
                                                                 onclick="confirmDelete('<?php echo htmlspecialchars($event['APID']); ?>')">
                                                                 <i class="fa fa-times"></i>
@@ -484,6 +492,66 @@ $active = 'history';
             }
         }
 
+        function changeCost(APID, currentCost) {
+            console.log('APID:', APID, 'Current Cost:', currentCost);
+
+            Swal.fire({
+                title: 'Change Total Cost',
+                input: 'number',
+                inputValue: currentCost,
+                inputAttributes: {
+                    min: 0,
+                    step: 'any'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: (newCost) => {
+                    console.log('New Cost:', newCost);
+                    if (newCost === "") {
+                        Swal.showValidationMessage("Cost cannot be empty");
+                        return false;
+                    }
+
+                    return fetch('modal/update_cost.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                APID: APID,
+                                total_cost: newCost
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: 'The total cost has been updated!',
+                                    icon: 'success',
+                                    willClose: () => {
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 500);
+                                    }
+                                });
+                            } else {
+                                Swal.fire('Error', 'Failed to update the cost.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error', 'There was a problem updating the cost.', 'error');
+                        });
+                }
+            });
+        }
+
+
+
         function openEditModal(CHID, eventName, startDate, endDate, donation, attendees, budget, expenses) {
             document.getElementById('editEventId').value = CHID;
             document.getElementById('editEventName').value = eventName;
@@ -580,7 +648,7 @@ $active = 'history';
 
         function deleteEvent(eventId) {
             $.ajax({
-                url: 'modal/delete_chevents.php',
+                url: 'modal/delete_aptevents.php',
                 type: 'POST',
                 data: {
                     id: eventId

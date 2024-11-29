@@ -270,18 +270,6 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                         <div id="card-em" class="desc fs-4"><?= htmlspecialchars($row['email']) ?></div>
                                     </div>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="row user-stats text-center">
-                                        <div class="col">
-                                            <div class="number"><?php echo $count1['total_appointments']; ?></div>
-                                            <div class="title">Events Added</div>
-                                        </div>
-                                        <div class="col">
-                                            <div class="number"><?php echo $count2['completed_appointments']; ?></div>
-                                            <div class="title">Events Done</div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -293,7 +281,7 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     <?php include("partial/script.php"); ?>
 
     <script>
-        const userId = "<?= $row['SID'] ?>";
+        const userId = "<?= $row['AID'] ?>";
 
         let currentField = null;
 

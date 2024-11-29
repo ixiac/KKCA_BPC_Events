@@ -1,28 +1,24 @@
 <?php
 session_start();
-include("db.php"); // Include the database connection file
+include("db.php");
 
 $error = '';
 $success = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get data from the form
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $username = $_POST['username'];
-    $sex = isset($_POST['sex']) && $_POST['sex'] == '1' ? 1 : 0; // 1 for female, 0 for male
+    $sex = isset($_POST['sex']) && $_POST['sex'] == '1' ? 1 : 0;
     $tel_no = $_POST['tel_no'];
     $age = $_POST['age'];
     $address = $_POST['address'];
-    $email = $_POST['email'] . '@gmail.com'; // Append domain
+    $email = $_POST['email'] . '@gmail.com';
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $date_created = date("Y-m-d H:i:s"); // Assuming current timestamp for date_created
 
-    // Basic validation
     if (empty($fname) || empty($lname) || empty($username) || empty($tel_no) || empty($age) || empty($address) || empty($email) || empty($password)) {
         $error = 'Please fill all fields';
     } else {
-        // Check if the username or email already exists
         $check_user_query = "SELECT * FROM customer WHERE username = ? OR email = ?";
         $stmt = $conn->prepare($check_user_query);
         $stmt->bind_param("ss", $username, $email);
@@ -32,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = 'Username or email already exists';
         } else {
-            // Insert the new user into the customer table
             $insert_query = "INSERT INTO customer (username, password, fname, lname, sex, address, tel_no, age, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($insert_query);
             $stmt->bind_param("ssssissis", $username, $password, $fname, $lname, $sex, $address, $tel_no, $age, $email);
@@ -74,7 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1 class="mb-1"><b>SIGN-UP</b></h1>
                 <p class="fs-6 mb-1">Have an account? <a class="fs-6" href="login.php">Log-in</a></p>
 
-                <!-- Display success or error message -->
                 <?php if ($error): ?>
                     <div class="alert alert-danger"><?= $error ?></div>
                 <?php endif; ?>
@@ -110,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="col-md-6 form-group">
                             <label for="telno">Tel/Phone No.</label>
-                            <input type="text" class="form-control" id="tel_no" name="tel_no" placeholder="09XXXXXXXXX" required>
+                            <input type="number" class="form-control" id="tel_no" name="tel_no" placeholder="09XXXXXXXXX" required>
                         </div>
                     </div>
                     <div class="mb-1 row">
@@ -120,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="col-3 form-group">
                             <label for="age">Age</label>
-                            <input type="text" class="form-control" id="age" name="age" required>
+                            <input type="number" class="form-control" id="age" name="age" required>
                         </div>
                     </div>
                     <div class="row">

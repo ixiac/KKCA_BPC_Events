@@ -17,12 +17,16 @@ $events_query = "
     SELECT 
         e.*, 
         CASE 
+            WHEN e.event_by LIKE 'AD%' THEN ad.username
+            WHEN e.event_by LIKE 'SF%' THEN sf.username
             WHEN e.event_by LIKE 'CM%' THEN cm.username
             WHEN e.event_by LIKE 'S%' THEN s.username
             WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
             ELSE 'Unknown' 
         END AS event_by_username
     FROM appointment e
+    LEFT JOIN admin ad ON e.event_by = ad.AID
+    LEFT JOIN staff sf ON e.event_by = sf.SFID
     LEFT JOIN church_mem cm ON e.event_by = cm.CMID
     LEFT JOIN student s ON e.event_by = s.SID
     LEFT JOIN customer c ON e.event_by = c.CID
@@ -151,9 +155,6 @@ $active = 'history';
                                 <h3 class="fw-bold mb-3 ms-3">Appointments</h3>
                             </div>
                         </div>
-                        <div class="ms-md-auto pb-3">
-                            <a data-bs-toggle="modal" data-bs-target="#sc_calendarModal" class="btn" style="color: white; background-color: #203b70; border-radius: 10px">View Calendar</a>
-                        </div>
                     </div>
 
                     <div class="modal fade" id="sc_calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
@@ -247,22 +248,14 @@ $active = 'history';
                                                         <td class="text-center"><?php echo $event['venue']; ?></td>
                                                         <td class="text-center">
                                                             <?php
-                                                            switch ($event['status']) {
-                                                                case '0':
-                                                                    echo '<span class="badge badge-warning ms-1" style="width: 80%;">Pending</span>';
-                                                                    break;
-                                                                case '1':
-                                                                    echo '<span class="badge badge-info ms-1" style="width: 80%;">Approved</span>';
-                                                                    break;
-                                                                case '2':
-                                                                    echo '<span class="badge badge-success ms-1" style="width: 80%;">Completed</span>';
-                                                                    break;
-                                                                case '3':
-                                                                    echo '<span class="badge badge-danger ms-1" style="width: 80%;">Cancelled</span>';
-                                                                    break;
-                                                                default:
-                                                                    echo '<span class="badge badge-secondary ms-1" style="width: 80%;">Unknown</span>';
-                                                                    break;
+                                                            if ($event['status'] == '0') {
+                                                                echo '<span class="badge badge-warning ms-1" style="width: 80%">Pending</span>';
+                                                            } elseif ($event['status'] == '1') {
+                                                                echo '<span class="badge badge-info ms-1" style="width: 80%">Approved</span>';
+                                                            } elseif ($event['status'] == '2') {
+                                                                echo '<span class="badge badge-success ms-1" style="width: 80%">Completed</span>';
+                                                            } elseif ($event['status'] == '3') {
+                                                                echo '<span class="badge badge-danger ms-1" style="width: 80%">Cancelled</span>';
                                                             }
                                                             ?>
                                                         </td>
@@ -279,6 +272,10 @@ $active = 'history';
                                                                 <button type="button" title="Cancel" class="btn btn-link btn-warning"
                                                                     onclick="cancelEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
                                                                     <i class="fa fa-ban"></i>
+                                                                </button>
+                                                                <button type="button" title="Enter Total Cost" class="btn btn-link btn-primary"
+                                                                    onclick="changeCost('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['total_cost']); ?>')">
+                                                                    <i class="fas fa-clipboard-check"></i>
                                                                 </button>
                                                                 <button type="button" title="Remove" class="btn btn-link btn-danger"
                                                                     onclick="confirmDelete('<?php echo htmlspecialchars($event['APID']); ?>')">
@@ -490,83 +487,63 @@ $active = 'history';
             }
         }
 
-        function openEditModal(CHID, eventName, startDate, endDate, donation, attendees, budget, expenses) {
-            document.getElementById('editEventId').value = CHID;
-            document.getElementById('editEventName').value = eventName;
-            document.getElementById('editStartDate').value = startDate;
-            document.getElementById('editEndDate').value = endDate;
-            document.getElementById('editDonation').value = donation;
-            document.getElementById('editAttendees').value = attendees;
-            document.getElementById('editBudget').value = budget;
-            document.getElementById('editExpenses').value = expenses;
-
-            var editEventModal = new bootstrap.Modal(document.getElementById('editEventModal'));
-            editEventModal.show();
-        }
-
-        document.getElementById('editEventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const CHID = document.getElementById('editEventId').value;
-            const eventName = document.getElementById('editEventName').value;
-            const startDate = document.getElementById('editStartDate').value;
-            const endDate = document.getElementById('editEndDate').value;
-            const donation = document.getElementById('editDonation').value;
-            const attendees = document.getElementById('editAttendees').value;
-            const budget = document.getElementById('editBudget').value;
-            const expenses = document.getElementById('editExpenses').value;
+        function changeCost(APID, currentCost) {
+            console.log('APID:', APID, 'Current Cost:', currentCost);
 
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to save these changes?",
-                icon: 'warning',
+                title: 'Change Total Cost',
+                input: 'number',
+                inputValue: currentCost,
+                inputAttributes: {
+                    min: 0,
+                    step: 'any'
+                },
                 showCancelButton: true,
-                confirmButtonColor: '#00A33C',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, save it!',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    fetch('modal/edit_chevents.php', {
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: (newCost) => {
+                    console.log('New Cost:', newCost);
+                    if (newCost === "") {
+                        Swal.showValidationMessage("Cost cannot be empty");
+                        return false;
+                    }
+
+                    return fetch('modal/update_cost.php', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
+                                'Content-Type': 'application/json'
                             },
-                            body: new URLSearchParams({
-                                CHID: CHID,
-                                event_name: eventName,
-                                start_date: startDate,
-                                end_date: endDate,
-                                donation: donation,
-                                attendees: attendees,
-                                budget: budget,
-                                expenses: expenses
+                            body: JSON.stringify({
+                                APID: APID,
+                                total_cost: newCost
                             })
                         })
                         .then(response => response.json())
                         .then(data => {
+                            console.log(data);
+
                             if (data.success) {
-                                bootstrap.Modal.getInstance(document.getElementById('editEventModal')).hide();
-
                                 Swal.fire({
-                                    title: 'Saved!',
-                                    text: 'Your changes have been saved.',
+                                    title: 'Success',
+                                    text: 'The total cost has been updated!',
                                     icon: 'success',
-                                    confirmButtonColor: '#00A33C',
+                                    willClose: () => {
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 500);
+                                    }
                                 });
-
-                                setTimeout(() => {
-                                    location.reload();
-                                }, 2000);
                             } else {
-                                Swal.fire('Error!', 'Failed to save changes.', 'error');
+                                Swal.fire('Error', 'Failed to update the cost.', 'error');
                             }
                         })
-                        .catch(err => {
-                            Swal.fire('Error!', 'An error occurred while saving.', 'error');
+                        .catch(error => {
+                            Swal.fire('Error', 'There was a problem updating the cost.', 'error');
                         });
                 }
             });
-        });
+        }
 
         function confirmDelete(eventId) {
             Swal.fire({
@@ -641,136 +618,6 @@ $active = 'history';
                         text: 'Something went wrong!',
                     });
                 }
-            });
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('sc_calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev',
-                    center: 'title',
-                    right: 'today next'
-                },
-                events: {
-                    url: 'modal/ch_calendar.php',
-                    method: 'GET',
-                    failure: function() {
-                        Swal.fire('Error', 'Failed to load events!', 'error');
-                    },
-                    success: function(data) {
-                        console.log("Loaded events:", data);
-                    }
-                },
-                locale: 'en',
-                timeZone: 'Asia/Manila',
-                eventColor: '#00A33C',
-                editable: true,
-                eventClick: function(info) {
-                    var event = info.event;
-
-                    $('#eventModal').modal('show');
-                    $('#eventTitle').val(event.title);
-                    $('#eventStart').val(event.start.toISOString().slice(0, 16));
-                    $('#eventEnd').val(event.end ? event.end.toISOString().slice(0, 16) : event.start.toISOString().slice(0, 16));
-
-                    $('#saveEvent').off('click').on('click', function() {
-                        var updatedTitle = $('#eventTitle').val();
-                        var updatedStart = $('#eventStart').val();
-                        var updatedEnd = $('#eventEnd').val();
-
-                        $.ajax({
-                            url: 'modal/update_chevents.php',
-                            method: 'POST',
-                            data: {
-                                id: event.id,
-                                title: updatedTitle,
-                                start: updatedStart,
-                                end: updatedEnd
-                            },
-                            success: function(response) {
-                                $('#eventModal').modal('hide');
-                                Swal.fire('Success', 'Event updated successfully!', 'success');
-                                calendar.refetchEvents();
-                            },
-                            error: function() {
-                                Swal.fire('Error', 'Failed to update event.', 'error');
-                            }
-                        });
-                    });
-
-                    $('#deleteEvent').off('click').on('click', function() {
-                        Swal.fire({
-                            title: 'Are you sure?',
-                            text: "This will permanently delete the event.",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
-                            confirmButtonText: 'Yes, delete it!'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $.ajax({
-                                    url: 'modal/delete_chevents.php',
-                                    method: 'POST',
-                                    data: {
-                                        id: event.id
-                                    },
-                                    success: function(response) {
-                                        $('#eventModal').modal('hide');
-                                        Swal.fire('Deleted!', 'Your event has been deleted.', 'success');
-                                        calendar.refetchEvents();
-                                    },
-                                    error: function() {
-                                        Swal.fire('Error', 'Failed to delete event.', 'error');
-                                    }
-                                });
-                            }
-                        });
-                    });
-                },
-                eventDrop: function(info) {
-                    $.ajax({
-                        url: 'modal/update_chevents.php',
-                        method: 'POST',
-                        data: {
-                            id: info.event.id,
-                            title: info.event.title,
-                            start: info.event.start.toISOString(),
-                            end: info.event.end ? info.event.end.toISOString() : null
-                        },
-                        success: function(response) {
-                            Swal.fire('Success', 'Event moved successfully!', 'success');
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Failed to move event.', 'error');
-                        }
-                    });
-                },
-                eventResize: function(info) {
-                    $.ajax({
-                        url: 'modal/update_chevents.php',
-                        method: 'POST',
-                        data: {
-                            id: info.event.id,
-                            start: info.event.start.toISOString(),
-                            end: info.event.end ? info.event.end.toISOString() : null
-                        },
-                        success: function(response) {
-                            Swal.fire('Success', 'Event resized successfully!', 'success');
-                        },
-                        error: function() {
-                            Swal.fire('Error', 'Failed to resize event.', 'error');
-                        }
-                    });
-                }
-            });
-
-            $('#sc_calendarModal').on('shown.bs.modal', function() {
-                calendar.render();
             });
         });
     </script>
