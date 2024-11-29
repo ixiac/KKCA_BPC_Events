@@ -7,13 +7,27 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     header("location: ../index");
     exit;
 } else {
-    $sql = "SELECT * FROM admin WHERE AID = '" . $_SESSION['id'] . "'";
+    $sql = "SELECT * FROM staff WHERE SFID = '" . $_SESSION['id'] . "'";
     $result = mysqli_query($conn, $sql);
     $row = mysqli_fetch_assoc($result);
-    $user_id = $row["AID"];
+    $user_id = $row["SFID"];
 }
 
-$events_query = "SELECT * FROM church_events";
+$events_query = "
+    SELECT 
+        e.*, 
+        CASE 
+            WHEN e.event_by LIKE 'CM%' THEN cm.username
+            WHEN e.event_by LIKE 'S%' THEN s.username
+            WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
+            ELSE 'Unknown' 
+        END AS event_by_username
+    FROM appointment e
+    LEFT JOIN church_mem cm ON e.event_by = cm.CMID
+    LEFT JOIN student s ON e.event_by = s.SID
+    LEFT JOIN customer c ON e.event_by = c.CID
+";
+
 $events_stmt = $conn->prepare($events_query);
 $events_stmt->execute();
 $events_result = $events_stmt->get_result();
@@ -41,62 +55,15 @@ $active = 'history';
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <link rel="stylesheet" href="../assets/css/forms.css">
 
     <link href="../assets/css/calendar.css" rel="stylesheet">
 </head>
 
 <body>
-
-    <!-- Edit Event Modal -->
-    <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="width: 30%">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editEventForm">
-                        <input type="hidden" id="editEventId" name="CHID">
-                        <div class="mb-5 px-3">
-                            <label for="editEventName" class="form-label">Event Name</label>
-                            <input type="text" class="form-control" id="editEventName" name="eventName" required>
-                        </div>
-                        <div class="row mb-3 px-3">
-                            <div class="col-md-6">
-                                <label for="editStartDate" class="form-label">Start Date & Time</label>
-                                <input type="datetime-local" class="form-control" id="editStartDate" name="startDate" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="editEndDate" class="form-label">End Date & Time</label>
-                                <input type="datetime-local" class="form-control" id="editEndDate" name="endDate" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 px-3">
-                            <label for="editAttendees" class="form-label">Donation</label>
-                            <input type="number" class="form-control" id="editDonation" name="donation" required>
-                        </div>
-                        <div class="mb-3 px-3">
-                            <label for="editAttendees" class="form-label">Attendees</label>
-                            <input type="number" class="form-control" id="editAttendees" name="attendees" required>
-                        </div>
-                        <div class="mb-3 px-3">
-                            <label for="editBudget" class="form-label">Budget</label>
-                            <input type="number" class="form-control" id="editBudget" name="budget" required>
-                        </div>
-                        <div class="mb-3 px-3">
-                            <label for="editExpenses" class="form-label">Expenses</label>
-                            <input type="number" class="form-control" id="editExpenses" name="expenses" required>
-                        </div>
-                        <div class="row justify-content-center mt-5 mb-3">
-                            <button type="submit" class="btn" style="background-color: #00A33C; color: white; width: 25%" form="editEventForm">Submit</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Add Event Modal -->
     <div class="modal fade" id="addEventModal" tabindex="-1" role="dialog" aria-labelledby="addEventModalLabel" aria-hidden="true">
@@ -184,7 +151,7 @@ $active = 'history';
                                     style="font-size: 20px; margin-top: 3px; color: gray;">
                                     <i class="fas fa-arrow-left me-2"></i>
                                 </a>
-                                <h3 class="fw-bold mb-3 ms-3">Church Events</h3>
+                                <h3 class="fw-bold mb-3 ms-3">Appointments</h3>
                             </div>
                         </div>
                         <div class="ms-md-auto pb-3">
@@ -241,7 +208,6 @@ $active = 'history';
 
 
                     <div class="row pt-5">
-
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">
@@ -256,12 +222,11 @@ $active = 'history';
                                             <thead>
                                                 <tr>
                                                     <th class="text-center">Event Name</th>
-                                                    <th class="text-center">Start Date</th>
-                                                    <th class="text-center">End Date</th>
-                                                    <th class="text-center">Donation</th>
-                                                    <th class="text-center">Attendees</th>
-                                                    <th class="text-center">Budget</th>
-                                                    <th class="text-center">Expenses</th>
+                                                    <th class="text-center">Event By</th>
+                                                    <th class="text-center">Category</th>
+                                                    <th class="text-center">Amount</th>
+                                                    <th class="text-center">Reference No.</th>
+                                                    <th class="text-center">Status</th>
                                                     <th class="text-center">Action</th>
                                                 </tr>
                                             </thead>
@@ -269,45 +234,69 @@ $active = 'history';
                                                 <?php
                                                 $events_result->data_seek(0);
                                                 while ($event = $events_result->fetch_assoc()) { ?>
-                                                    <tr>
-                                                        <td class="text-center"><?php echo $event['event_name']; ?></td>
-                                                        <td class="text-center">
-                                                            <span style="display: none;"><?php echo strtotime($event['start_date']); ?></span>
-                                                            <?php echo date('F j, Y, g:i A', strtotime($event['start_date'])); ?>
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <span style="display: none;"><?php echo strtotime($event['end_date']); ?></span>
-                                                            <?php echo date('F j, Y, g:i A', strtotime($event['end_date'])); ?>
-                                                        </td>
-                                                        <td class="text-center"><?php echo $event['donation']; ?></td>
-                                                        <td class="text-center"><?php echo $event['attendees']; ?></td>
-                                                        <td class="text-center"><?php echo $event['budget']; ?></td>
-                                                        <td class="text-center"><?php echo $event['expenses']; ?></td>
-                                                        <td class="text-center">
-                                                            <div class="form-button-action">
-                                                                <button type="button" title="Edit" class="btn btn-link btn-lg" style="color: #203b70;"
-                                                                    onclick="openEditModal(
-                                                                        '<?php echo htmlspecialchars($event['CHID']); ?>',
-                                                                        '<?php echo htmlspecialchars($event['event_name']); ?>',
-                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
-                                                                        '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
-                                                                        '<?php echo htmlspecialchars($event['donation']); ?>',
-                                                                        '<?php echo htmlspecialchars($event['attendees']); ?>',
-                                                                        '<?php echo htmlspecialchars($event['budget']); ?>',
-                                                                        '<?php echo htmlspecialchars($event['expenses']); ?>'
-                                                                    )">
-                                                                    <i class="fa fa-edit"></i>
-                                                                </button>
-                                                                <button type="button" title="Remove" class="btn btn-link btn-danger"
-                                                                    onclick="confirmDelete('<?php echo htmlspecialchars($event['CHID']); ?>')">
-                                                                    <i class="fa fa-times"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
+                                                    <td class="text-center"><?php echo $event['event_name']; ?></td>
+                                                    <td class="text-center"><?php echo $event['event_by_username']; ?></td>
+                                                    <td class="text-center"><?php echo $event['category']; ?></td>
+                                                    <td class="text-center">₱<?php echo number_format($event['reg_fee'], 2); ?></td>
+                                                    <td class="text-center"><?php echo ($event['ref_no']); ?></td>
+                                                    <td class="text-center">
+                                                        <?php
+                                                        switch ($event['status']) {
+                                                            case '0':
+                                                                echo '<span class="badge badge-warning ms-1" style="width: 80%;">Pending</span>';
+                                                                break;
+                                                            case '1':
+                                                                echo '<span class="badge badge-info ms-1" style="width: 80%;">Approved</span>';
+                                                                break;
+                                                            case '2':
+                                                                echo '<span class="badge badge-success ms-1" style="width: 80%;">Completed</span>';
+                                                                break;
+                                                            case '3':
+                                                                echo '<span class="badge badge-danger ms-1" style="width: 80%;">Cancelled</span>';
+                                                                break;
+                                                            default:
+                                                                echo '<span class="badge badge-secondary ms-1" style="width: 80%;">Unknown</span>';
+                                                                break;
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div class="form-button-action">
+                                                            <button type="button" title="Approve" class="btn btn-link btn-info"
+                                                                onclick="approveEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
+                                                                <i class="fa fa-check"></i>
+                                                            </button>
+                                                            <button type="button" title="Completed" class="btn btn-link btn-success"
+                                                                onclick="completeEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
+                                                                <i class="fa fa-check-circle"></i>
+                                                            </button>
+                                                            <button type="button" title="Cancel" class="btn btn-link btn-warning"
+                                                                onclick="cancelEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
+                                                                <i class="fa fa-ban"></i>
+                                                            </button>
+                                                            <button type="button" title="Remove" class="btn btn-link btn-danger"
+                                                                onclick="confirmDelete('<?php echo htmlspecialchars($event['APID']); ?>')">
+                                                                <i class="fa fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                     </tr>
                                                 <?php } ?>
                                             </tbody>
-
+                                            <tfoot>
+                                                <tr>
+                                                    <th colspan="5"></th>
+                                                    <th rowspan="1" colspan="1">
+                                                        <select class="form-select" id="status-filter">
+                                                            <option value="">All</option>
+                                                            <option value="0">Pending</option>
+                                                            <option value="1">Approved</option>
+                                                            <option value="2">Completed</option>
+                                                            <option value="3">Cancelled</option>
+                                                        </select>
+                                                    </th>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -329,19 +318,40 @@ $active = 'history';
                                     targets: [7]
                                 }]
                             });
-
-                            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                                var selectedYear = $('#yearFilter').val();
-                                var startDate = data[1];
-                                var eventYear = new Date(startDate).getFullYear();
-
-                                return selectedYear === "" || eventYear == selectedYear;
-                            });
-
-                            $('#yearFilter').on('change', function() {
-                                table.draw();
-                            });
                         });
+
+                        document.getElementById('status-filter').addEventListener('change', function() {
+                            const selectedValue = this.value;
+                            const table = document.getElementById('multi-filter-select');
+                            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const statusCell = rows[i].getElementsByTagName('td')[6];
+                                if (statusCell) {
+                                    const status = statusCell.textContent.trim();
+                                    if (selectedValue === "" || status === getStatusLabel(selectedValue)) {
+                                        rows[i].style.display = "";
+                                    } else {
+                                        rows[i].style.display = "none";
+                                    }
+                                }
+                            }
+                        });
+
+                        function getStatusLabel(value) {
+                            switch (value) {
+                                case "0":
+                                    return "Pending";
+                                case "1":
+                                    return "Approved";
+                                case "2":
+                                    return "Completed";
+                                case "3":
+                                    return "Cancelled";
+                                default:
+                                    return "";
+                            }
+                        }
                     </script>
 
                 </div>
@@ -354,6 +364,126 @@ $active = 'history';
     <?php include("partial/script.php"); ?>
 
     <script>
+        function approveEvent(APID, status) {
+            if (status == 1) {
+                Swal.fire({
+                    title: 'Already Approved!',
+                    text: 'This event has already been approved.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to approve this event?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, approve it!',
+                    cancelButtonText: 'No, cancel!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "modal/approve_event.php", true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                Swal.fire(
+                                    'Approved!',
+                                    'The event has been approved.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        };
+                        xhr.send("APID=" + APID);
+                    }
+                });
+            }
+        }
+
+        function completeEvent(APID, status) {
+            if (status == 2) {
+                Swal.fire({
+                    title: 'Already Completed!',
+                    text: 'This event has already been marked as completed.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to mark this event as completed?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, mark it as completed!',
+                    cancelButtonText: 'No, cancel!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "modal/complete_aptevents.php", true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                Swal.fire(
+                                    'Completed!',
+                                    'The event has been marked as completed.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        };
+                        xhr.send("APID=" + APID);
+                    }
+                });
+            }
+        }
+
+        function cancelEvent(APID, status) {
+            if (status == 3) {
+                Swal.fire({
+                    title: 'Already Cancelled!',
+                    text: 'This event has already been cancelled.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to cancel this event?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, cancel it!',
+                    cancelButtonText: 'No, cancel!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "modal/cancel_aptevents.php", true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                Swal.fire(
+                                    'Cancelled!',
+                                    'The event has been cancelled.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        };
+                        xhr.send("APID=" + APID);
+                    }
+                });
+            }
+        }
+
         function openEditModal(CHID, eventName, startDate, endDate, donation, attendees, budget, expenses) {
             document.getElementById('editEventId').value = CHID;
             document.getElementById('editEventName').value = eventName;

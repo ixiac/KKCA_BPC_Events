@@ -55,12 +55,12 @@
                                 <div class="collapse" id="subnav1">
                                     <ul class="nav nav-collapse subnav">
                                         <li>
-                                            <a href="#">
+                                            <a href="history">
                                                 <span class="sub-item">Events</span>
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#">
+                                            <a href="aptn_transac">
                                                 <span class="sub-item">Transactions</span>
                                             </a>
                                         </li>
@@ -90,10 +90,25 @@
                     </a>
                     <div class="collapse" id="charts">
                         <ul class="nav nav-collapse">
-                            <li>
-                                <a href="aptn_analytics">
+                            <li class="submenu">
+                                <a data-bs-toggle="collapse" href="#subnav2" class="collapsed" aria-expanded="false">
                                     <span class="sub-item">Appointment Analytics</span>
+                                    <span class="caret"></span>
                                 </a>
+                                <div class="collapse" id="subnav2">
+                                    <ul class="nav nav-collapse subnav">
+                                        <li>
+                                            <a href="aptn_analytics">
+                                                <span class="sub-item">Appointing</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="aptn_finance">
+                                                <span class="sub-item">Finance</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
                             </li>
                             <li>
                                 <a href="sc_analytics">

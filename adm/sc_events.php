@@ -232,25 +232,7 @@ $active = 'history';
                     </div>
 
 
-                    <div class="row">
-                        <div class="form-group ps-3">
-                            <label for="yearFilter" class="text-muted">Filter by:</label>
-                            <select id="yearFilter" class="form-control text-muted" style="width: 5%; background-color: #dbdde0; border: 1px solid gray;">
-                                <option value="">Year</option>
-                                <?php
-                                $years = [];
-                                $events_result->data_seek(0);
-                                while ($event = $events_result->fetch_assoc()) {
-                                    $year = date('Y', strtotime($event['start_date']));
-                                    if (!in_array($year, $years)) {
-                                        $years[] = $year;
-                                        echo "<option value=\"$year\">$year</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </div>
-
+                    <div class="row pt-5">
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header">

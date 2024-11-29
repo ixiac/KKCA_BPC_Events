@@ -47,6 +47,26 @@
                     </a>
                     <div class="collapse" id="maps">
                         <ul class="nav nav-collapse">
+                            <li class="submenu">
+                                <a data-bs-toggle="collapse" href="#subnav1" class="collapsed" aria-expanded="false">
+                                    <span class="sub-item">Appointments</span>
+                                    <span class="caret"></span>
+                                </a>
+                                <div class="collapse" id="subnav1">
+                                    <ul class="nav nav-collapse subnav">
+                                        <li>
+                                            <a href="history">
+                                                <span class="sub-item">Events</span>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a href="aptn_transac">
+                                                <span class="sub-item">Transactions</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
                             <li>
                                 <a href="sc_events">
                                     <span class="sub-item">School Events</span>

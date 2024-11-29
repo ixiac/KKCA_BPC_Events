@@ -1,6 +1,8 @@
 <?php
 include("../partial/db.php");
 
+$year = $_GET['year'] ?? date('Y');
+
 $sql = "
     SELECT 
         SUM(CASE WHEN status = 0 THEN 1 ELSE 0 END) AS pending,
@@ -9,7 +11,9 @@ $sql = "
         SUM(CASE WHEN status = 3 THEN 1 ELSE 0 END) AS cancelled,
         COUNT(*) AS total
     FROM appointment
+    WHERE YEAR(start_date) = $year
 ";
+
 $result = mysqli_query($conn, $sql);
 
 $data = [

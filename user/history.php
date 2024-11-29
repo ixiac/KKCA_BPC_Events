@@ -258,15 +258,13 @@ $active = 'history';
                                                                             <td class="text-center">
                                                                                 <?php
                                                                                 if ($event['status'] == '0') {
-                                                                                    echo '<span class="badge badge-warning ms-1" style="width: 60%">Pending</span>';
+                                                                                    echo '<span class="badge badge-warning ms-1" style="width: 80%">Pending</span>';
                                                                                 } elseif ($event['status'] == '1') {
-                                                                                    echo '<span class="badge badge-warning ms-1" style="width: 60%">Approved</span>';
+                                                                                    echo '<span class="badge badge-info ms-1" style="width: 80%">Approved</span>';
                                                                                 } elseif ($event['status'] == '2') {
-                                                                                    echo '<span class="badge badge-danger ms-1" style="width: 60%">Ongoing</span>';
+                                                                                    echo '<span class="badge badge-success ms-1" style="width: 80%">Completed</span>';
                                                                                 } elseif ($event['status'] == '3') {
-                                                                                    echo '<span class="badge badge-success ms-1" style="width: 60%">Completed</span>';
-                                                                                } elseif ($event['status'] == '4') {
-                                                                                    echo '<span class="badge badge-danger ms-1" style="width: 60%">Cancelled</span>';
+                                                                                    echo '<span class="badge badge-danger ms-1" style="width: 80%">Cancelled</span>';
                                                                                 }
                                                                                 ?>
                                                                             </td>

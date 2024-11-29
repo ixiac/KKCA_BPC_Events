@@ -15,9 +15,19 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
     $currentMonth = date("F");
 }
 
+$aptnct = "SELECT COUNT(*) AS appointment_count FROM appointment";
+$result = $conn->query($aptnct);
+
+$appointment_tcount = 0;
+if ($result->num_rows > 0) {
+    $aptnctc = $result->fetch_assoc();
+    $appointment_tcount = $aptnctc['appointment_count'];
+}
+
 $aptncm = "SELECT COUNT(*) AS appointment_mcount
         FROM appointment
-        WHERE MONTH(date_created) = MONTH(CURRENT_DATE) AND YEAR(date_created) = YEAR(CURRENT_DATE)";
+        WHERE MONTH(date_created) = MONTH(CURRENT_DATE) 
+          AND YEAR(date_created) = YEAR(CURRENT_DATE)";
 $result = $conn->query($aptncm);
 
 $appointment_mcount = 0;
@@ -79,76 +89,7 @@ $appointmentsData = [
     'values' => []
 ];
 
-$daysInMonthQuery = " 
-    SELECT DAY(date_field) AS day
-    FROM (
-        SELECT CURDATE() - INTERVAL (DAY(CURDATE()) - 1) DAY + INTERVAL (d1.n * 10 + d2.n) DAY AS date_field
-        FROM (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
-              UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS d1,
-             (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
-              UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS d2
-    ) AS dates
-    WHERE MONTH(date_field) = MONTH(CURRENT_DATE) AND YEAR(date_field) = YEAR(CURRENT_DATE)
-      AND date_field <= CURDATE()  -- Limit to the current day
-    ORDER BY date_field ASC
-";
-
-$sparkmonth = "
-    SELECT d.day, IFNULL(a.appointment_count, 0) AS appointment_count
-    FROM ($daysInMonthQuery) AS d
-    LEFT JOIN (
-        SELECT COUNT(*) AS appointment_count, DAY(date_created) AS day 
-        FROM appointment 
-        WHERE MONTH(date_created) = MONTH(CURRENT_DATE) 
-          AND YEAR(date_created) = YEAR(CURRENT_DATE) 
-        GROUP BY DAY(date_created)
-    ) AS a ON d.day = a.day
-    ORDER BY d.day ASC
-";
-
-$sparkresult = $conn->query($sparkmonth);
-while ($spark = $sparkresult->fetch_assoc()) {
-    $appointmentsData['labels'][] = $spark['day'];
-    $appointmentsData['values'][] = $spark['appointment_count'];
-}
-
-$appointmentsDataStart = [
-    'labels' => [],
-    'values' => []
-];
-
-$daysInMonthQueryStart = " 
-    SELECT DAY(date_field) AS day
-    FROM (
-        SELECT CURDATE() - INTERVAL (DAY(CURDATE()) - 1) DAY + INTERVAL (d1.n * 10 + d2.n) DAY AS date_field
-        FROM (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
-              UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS d1,
-             (SELECT 0 AS n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 
-              UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) AS d2
-    ) AS dates
-    WHERE MONTH(date_field) = MONTH(CURRENT_DATE) AND YEAR(date_field) = YEAR(CURRENT_DATE)
-    ORDER BY date_field ASC
-";
-
-$sparkmonthStart = "
-    SELECT d.day, IFNULL(a.appointment_count, 0) AS appointment_count
-    FROM ($daysInMonthQueryStart) AS d
-    LEFT JOIN (
-        SELECT COUNT(*) AS appointment_count, DAY(start_date) AS day 
-        FROM appointment 
-        WHERE MONTH(start_date) = MONTH(CURRENT_DATE) 
-          AND YEAR(start_date) = YEAR(CURRENT_DATE) 
-        GROUP BY DAY(start_date)
-    ) AS a ON d.day = a.day
-    ORDER BY d.day ASC
-";
-
-$sparkresultStart = $conn->query($sparkmonthStart);
-while ($spark = $sparkresultStart->fetch_assoc()) {
-    $appointmentsDataStart['labels'][] = $spark['day'];
-    $appointmentsDataStart['values'][] = $spark['appointment_count'];
-}
-
+$active = "analytics";
 ?>
 
 
@@ -180,7 +121,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                     <div
                         class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
                         <div>
-                            <h3 class="fw-bold mb-3">Staff Page</h3>
+                            <h3 class="fw-bold mb-3">Appointment Analytics</h3>
                         </div>
                     </div>
 
@@ -210,7 +151,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     </span>
                                     <div>
                                         <h5 class="mb-1">
-                                            <b><a href="#">132</a></b>
+                                            <b><a href="#"><?php echo number_format($appointment_tcount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Total Appointments</small>
                                     </div>
@@ -225,7 +166,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     </span>
                                     <div>
                                         <h5 class="mb-1">
-                                            <b><a href="#">78</a></b>
+                                            <b><a href="#"><?php echo number_format($appointment_ycount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments this year</small>
                                     </div>
@@ -240,7 +181,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     </span>
                                     <div>
                                         <h5 class="mb-1">
-                                            <b><a href="#"><?php echo number_format($daily_event); ?></a></b>
+                                            <b><a href="#"><?php echo number_format($appointment_mcount); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments this month</small>
                                     </div>
@@ -255,7 +196,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                     </span>
                                     <div>
                                         <h5 class="mb-1">
-                                            <b><a href="#"><?php echo number_format($daily_event); ?></a></b>
+                                            <b><a href="#"><?php echo number_format($daily_aptn); ?></a></b>
                                         </h5>
                                         <small class="text-muted">Appointments today</small>
                                     </div>
@@ -264,6 +205,10 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         </div>
                     </div>
 
+                    <div class="pb-3">
+                        <select id="yearFilter" class="form-select form-select-sm w-auto" style="background-color: #dbdde0; border: 1px solid gray;">
+                        </select>
+                    </div>
                     <div class="row pb-5">
                         <div class="col-md-5 d-flex flex-column">
                             <div class="card flex-fill">
@@ -287,7 +232,6 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                                 <div class="card-header">
                                     <div class="row">
                                         <div class="col card-title">Appointment Categories</div>
-                                        <div class="col card-title text-end"></div>
                                     </div>
                                 </div>
                                 <div class="card-body d-flex flex-column justify-content-between align-items-center">
@@ -304,7 +248,7 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
                         <div class="col-md-8">
                             <div class="card">
                                 <div class="card-header">
-                                    <div class="card-title">Line Chart</div>
+                                    <div class="card-title">Yearly Trends</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="chart-container" style="position: relative; height: 100%; width: 100%;">
@@ -335,284 +279,321 @@ while ($spark = $sparkresultStart->fetch_assoc()) {
     <?php include("partial/script.php"); ?>
 
     <script>
-        fetch('modal/piechart.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data || !('pending' in data) || !('approved' in data) || !('completed' in data) || !('cancelled' in data) || !('total' in data)) {
-                    console.error('Invalid data format:', data);
-                    return;
-                }
+        const loadYears = () => {
+            const currentYear = new Date().getFullYear();
+            const yearFilter = document.getElementById('yearFilter');
 
-                const {
-                    pending,
-                    approved,
-                    completed,
-                    cancelled,
-                    total
-                } = data;
+            for (let i = currentYear; i >= currentYear - 5; i--) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                yearFilter.appendChild(option);
+            }
 
-                const pendingPercentage = total ? (pending / total) * 100 : 0;
-                const approvedPercentage = total ? (approved / total) * 100 : 0;
-                const cancelledPercentage = total ? (cancelled / total) * 100 : 0;
+            yearFilter.value = currentYear;
+        };
 
-                const alertContainer = document.getElementById('pie-alert-container');
-                alertContainer.innerHTML = '';
+        const fetchAppointmentStatusData = (year) => {
+            return fetch(`modal/piechart.php?year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('Error fetching status data:', error);
+                    return {};
+                });
+        };
 
-                if (pendingPercentage > 20) {
-                    alertContainer.innerHTML += `
+        const renderAppointmentStatusPieChart = async (year) => {
+            const data = await fetchAppointmentStatusData(year);
+
+            if (!data || typeof data !== 'object' || !data.hasOwnProperty('pending') || !data.hasOwnProperty('approved') || !data.hasOwnProperty('completed') || !data.hasOwnProperty('cancelled') || !data.hasOwnProperty('total')) {
+                console.error('Invalid data format:', data);
+                return;
+            }
+
+            const {
+                pending,
+                approved,
+                completed,
+                cancelled,
+                total
+            } = data;
+
+            const pendingPercentage = total ? (pending / total) * 100 : 0;
+            const approvedPercentage = total ? (approved / total) * 100 : 0;
+            const cancelledPercentage = total ? (cancelled / total) * 100 : 0;
+
+            const alertContainer = document.getElementById('pie-alert-container');
+            alertContainer.innerHTML = '';
+
+            if (pendingPercentage > 20) {
+                alertContainer.innerHTML += `
                 <div class="alert alert-danger text-center">
                     Action Required: More than 20% of appointments are pending! 
                     Too much pending requests can lead to delays in scheduling, 
                     frustration among customers, and potential loss of trust in the appointment system. 
                 </div>
             `;
-                }
+            }
 
-                const canvas = document.getElementById('piechart');
-                if (!canvas) {
-                    console.error('Canvas element not found');
-                    return;
-                }
-                const ctx = canvas.getContext('2d');
+            const ctx = document.getElementById('piechart').getContext('2d');
+            if (window.appointmentPieChart) {
+                window.appointmentPieChart.destroy();
+            }
 
-                if (window.statusChart) {
-                    window.statusChart.destroy();
-                }
-
-                window.statusChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Pending', 'Approved', 'Completed', 'Cancelled'],
-                        datasets: [{
-                            data: [pending, approved, completed, cancelled],
-                            backgroundColor: [
-                                'rgba(255, 205, 86, 0.7)',
-                                'rgba(54, 162, 235, 0.7)',
-                                'rgba(0, 163, 60, 0.7)',
-                                'rgba(255, 99, 132, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 205, 86, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(0, 163, 60, 1)',
-                                'rgba(255, 99, 132, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        aspectRatio: 1,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                enabled: true,
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching status data:', error));
-
-        fetch('modal/catbarchart.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (!data || !Array.isArray(data.categories) || !Array.isArray(data.counts)) {
-                    console.error('Invalid data format:', data);
-                    return;
-                }
-
-                const {
-                    categories,
-                    counts
-                } = data;
-
-                const maxCount = Math.max(...counts);
-                const minCount = Math.min(...counts);
-                const topCategoryIndex = counts.indexOf(maxCount);
-                const lowestCategoryIndex = counts.indexOf(minCount);
-
-                const topCategory = categories[topCategoryIndex];
-                const lowestCategory = categories[lowestCategoryIndex];
-
-                const recommendationContainer = document.getElementById('cat-alert-container');
-                recommendationContainer.innerHTML = `
-            <div class="alert alert-success text-center">
-                <strong>Top Category: ${topCategory}</strong> - This event type is very popular. Consider adding more time slots or resources to accommodate the demand.
-            </div>
-            <div class="alert alert-danger text-center">
-                <strong>Lowest Category: ${lowestCategory}</strong> - This event type has lower engagement. Encourage members to participate through announcements, special sermons, or promotions.
-            </div>
-        `;
-
-                const canvas = document.getElementById('cbarchart');
-                if (!canvas) {
-                    console.error('Canvas element not found');
-                    return;
-                }
-                const ctx = canvas.getContext('2d');
-
-                if (window.categoryChart) {
-                    window.categoryChart.destroy();
-                }
-
-                window.categoryChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: categories,
-                        datasets: [{
-                            label: 'Number of Appointments',
-                            data: counts,
-                            backgroundColor: [
-                                'rgba(75, 192, 192, 0.7)',
-                                'rgba(54, 162, 235, 0.7)',
-                                'rgba(255, 206, 86, 0.7)',
-                                'rgba(255, 99, 132, 0.7)',
-                                'rgba(153, 102, 255, 0.7)',
-                                'rgba(201, 203, 207, 0.7)',
-                                'rgba(255, 159, 64, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(201, 203, 207, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            x: {
-                                beginAtZero: true
-                            },
-                            y: {
-                                beginAtZero: true
-                            }
+            window.appointmentPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Pending', 'Approved', 'Completed', 'Cancelled'],
+                    datasets: [{
+                        label: 'Appointment Status',
+                        data: [pending, approved, completed, cancelled],
+                        backgroundColor: [
+                            'rgba(255, 159, 64, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 99, 132, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'center'
                         },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                align: 'center'
-                            },
-                            tooltip: {
-                                enabled: true
-                            }
+                        tooltip: {
+                            enabled: true
                         }
                     }
+                }
+            });
+        };
+
+        const fetchCategoryData = (year) => {
+            return fetch(`modal/catbarchart.php?year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
                 });
-            })
-            .catch(error => console.error('Error fetching category data:', error));
+        };
 
-        fetch('modal/linechart.php')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Fetched Data:', data);
+        const renderCategoryChart = async (year) => {
+            const data = await fetchCategoryData(year);
 
-                if (!data || !Array.isArray(data) || data.length === 0) {
-                    console.error('Data format issue or no data returned:', data);
-                    document.querySelector('.tota-container').innerHTML = `
-                <p><strong>Error: No valid data available.</strong></p>`;
-                    return;
+            if (!data || !Array.isArray(data.categories) || !Array.isArray(data.counts)) {
+                console.error('Invalid data format:', data);
+                return;
+            }
+
+            const {
+                categories,
+                counts
+            } = data;
+
+            const maxCount = Math.max(...counts);
+            const minCount = Math.min(...counts);
+            if (maxCount === 0 && minCount === 0) {
+                console.log('No data to display for categories.');
+                return;
+            }
+
+            const topCategoryIndex = counts.indexOf(maxCount);
+            const lowestCategoryIndex = counts.indexOf(minCount);
+            const topCategory = categories[topCategoryIndex];
+            const lowestCategory = categories[lowestCategoryIndex];
+
+            const recommendationContainer = document.getElementById('cat-alert-container');
+            recommendationContainer.innerHTML = '';
+
+            if (maxCount > 0) {
+                recommendationContainer.innerHTML += `
+        <div class="alert alert-success text-center">
+            <strong>Top Category: ${topCategory}</strong> - Consider adding more time slots or resources.
+        </div>
+    `;
+            }
+
+            if (minCount > 0) {
+                recommendationContainer.innerHTML += `
+        <div class="alert alert-danger text-center">
+            <strong>Lowest Category: ${lowestCategory}</strong> - Consider encouraging participation through announcements.
+        </div>
+    `;
+            }
+
+            const canvas = document.getElementById('cbarchart');
+            const ctx = canvas.getContext('2d');
+
+            if (window.categoryChart) {
+                window.categoryChart.destroy();
+            }
+
+            window.categoryChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Number of Appointments',
+                        data: counts,
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(201, 203, 207, 0.7)',
+                            'rgba(255, 159, 64, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(201, 203, 207, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'center'
+                        },
+                        tooltip: {
+                            enabled: true
+                        }
+                    }
                 }
+            });
+        };
 
-                const labels = data.map(event => event.month || 'Unknown');
-                const totalEvents = data.map(event => parseInt(event.total_events) || 0);
+        const fetchEventData = (year) => {
+            return fetch(`modal/linechart.php?year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                });
+        };
 
-                console.log('Labels:', labels);
-                console.log('Total Events:', totalEvents);
+        const renderEventChart = async (year) => {
+            const data = await fetchEventData(year);
 
-                if (labels.includes('Unknown') || totalEvents.includes(0)) {
-                    console.warn('Some months or event totals are invalid:', labels, totalEvents);
-                }
+            if (!data || !Array.isArray(data) || data.length === 0) {
+                console.error('Data format issue or no data returned:', data);
+                return;
+            }
 
-                let maxIndex = totalEvents.indexOf(Math.max(...totalEvents));
-                let minIndex = totalEvents.indexOf(Math.min(...totalEvents));
+            const labels = data.map(event => event.month || 'Unknown');
+            const totalEvents = data.map(event => parseInt(event.total_events) || 0);
 
-                const highestMonth = labels[maxIndex];
-                const lowestMonth = labels[minIndex];
-                const highestValue = totalEvents[maxIndex];
-                const lowestValue = totalEvents[minIndex];
+            if (totalEvents.every(event => event === 0)) {
+                console.log('No events added in any month.');
 
                 const totaContainer = document.querySelector('.tota-container');
-                totaContainer.innerHTML = `
-            <p><strong>Month with the highest events:</strong> ${highestMonth} (${highestValue} events)</p>
-            <p><strong>Month with the lowest events:</strong> ${lowestMonth} (${lowestValue} events)</p>
-            <p><strong>Recommendations:</strong></p>
-            <ul>
-                <li><strong>For ${highestMonth}:</strong> Maintain the strategies that contributed to its success. Consider scaling promotional efforts.</li>
-                <li><strong>For ${lowestMonth}:</strong> Investigate the reasons for low engagement. Plan campaigns, offer incentives, or schedule additional events.</li>
-            </ul>
-        `;
+                totaContainer.innerHTML = '<p>No events added in this year.</p>';
 
-                const ctx = document.getElementById('linechart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Total Events Added',
-                            data: totalEvents,
-                            borderColor: 'rgba(32, 59, 112, 0.8)',
-                            backgroundColor: 'rgba(63, 119, 226, 0.6)',
-                            fill: true,
-                            borderWidth: 2,
-                            tension: 0.5,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                display: true,
-                                position: 'top',
-                            },
+                const chartCanvas = document.getElementById('linechart');
+                chartCanvas.innerHTML = '';
+                chartCanvas.width = chartCanvas.width;
+
+                return;
+            }
+
+            let maxIndex = totalEvents.indexOf(Math.max(...totalEvents));
+            let minIndex = totalEvents.indexOf(Math.min(...totalEvents));
+
+            const highestMonth = labels[maxIndex];
+            const lowestMonth = labels[minIndex];
+            const highestValue = totalEvents[maxIndex];
+            const lowestValue = totalEvents[minIndex];
+
+            const totaContainer = document.querySelector('.tota-container');
+            totaContainer.innerHTML = `
+        <p><strong>Month with the highest events:</strong> ${highestMonth} (${highestValue} events)</p>
+        <p><strong>Month with the lowest events:</strong> ${lowestMonth} (${lowestValue} events)</p>
+        <p><strong>Recommendations:</strong></p>
+        <ul>
+            <li><strong>For ${highestMonth}:</strong> Maintain the strategies that contributed to its success.</li>
+            <li><strong>For ${lowestMonth}:</strong> Investigate the reasons for low engagement.</li>
+        </ul>
+    `;
+
+            const ctx = document.getElementById('linechart').getContext('2d');
+
+            if (window.lineChart) {
+                window.lineChart.destroy();
+            }
+
+            window.lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Events',
+                        data: totalEvents,
+                        fill: false,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
                         },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Months',
-                                },
-                            },
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Number of Events',
-                                },
-                                ticks: {
-                                    stepSize: 1
-                                },
-                            },
-                        },
-                    },
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                document.querySelector('.tota-container').innerHTML = `
-            <p><strong>Error fetching data. Please try again later.</strong></p>`;
+                        tooltip: {
+                            enabled: true
+                        }
+                    }
+                }
             });
+        };
+
+        document.getElementById('yearFilter').addEventListener('change', (event) => {
+            const selectedYear = event.target.value;
+            renderAppointmentStatusPieChart(selectedYear);
+            renderCategoryChart(selectedYear);
+            renderEventChart(selectedYear);
+        });
+
+        loadYears();
+        const currentYear = new Date().getFullYear();
+        renderAppointmentStatusPieChart(currentYear);
+        renderCategoryChart(currentYear);
+        renderEventChart(currentYear);
     </script>
 
 </body>
