@@ -28,22 +28,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     switch ($category) {
         case "Wedding":
-            $exp_cost = 15000;
+            $exp_cost = 30000;
             break;
         case "Baptism":
-            $exp_cost = 3000;
+            $exp_cost = 1500;
             break;
         case "Celebrations":
             $exp_cost = 10000;
             break;
         case "Funerals":
-            $exp_cost = 10000;
+            $exp_cost = 4500;
             break;
         case "Community Outreach":
-            $exp_cost = 5000;
+            $exp_cost = 3500;
             break;
         case "Youth Fellowship":
-            $exp_cost = 5000;
+            $exp_cost = 3500;
             break;
         default:
             $exp_cost = 0;

@@ -223,7 +223,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Wedding</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">30,000</span>
                   <span class="text text-dark">+</span>
                 </div>
               </div>
@@ -235,7 +235,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">5,000-15,000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -258,7 +258,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Baptism</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">1,500</span>
                   <span class="text text-dark">+</span>
                 </div>
               </div>
@@ -270,42 +270,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Coordinators</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">On-site Assistance</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-3 pe-md-0">
-            <div class="card card-pricing">
-              <div class="card-header">
-                <h4 class="card-title">Receptions</h4>
-                <div class="card-price">
-                  <span class="price">15,000</span>
-                  <span class="text text-dark">+</span>
-                </div>
-              </div>
-              <div class="card-body">
-                <ul class="specification-list">
-                  <li>
-                    <span class="name-specification">Negotiable</span>
-                    <span class="status-specification">Yes</span>
-                  </li>
-                  <li>
-                    <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-1,500</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -365,7 +330,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Youth Fellowship</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">3,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -377,11 +342,11 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-5,000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
+                    <span class="status-specification">Any</span>
                   </li>
                   <li>
                     <span class="name-specification">Coordinators</span>
@@ -400,7 +365,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Funerals</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">4,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -412,7 +377,7 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">1,000-3000</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
@@ -435,7 +400,7 @@ $loggedIn = isset($_SESSION["id"]);
               <div class="card-header">
                 <h4 class="card-title">Community Outreach</h4>
                 <div class="card-price">
-                  <span class="price">15,000</span>
+                  <span class="price">3,500</span>
                   <span class="text text-white">+</span>
                 </div>
               </div>
@@ -447,11 +412,11 @@ $loggedIn = isset($_SESSION["id"]);
                   </li>
                   <li>
                     <span class="name-specification">Down Payment</span>
-                    <span class="status-specification">5,000-10,000</span>
+                    <span class="status-specification">500-1,500</span>
                   </li>
                   <li>
                     <span class="name-specification">Venue</span>
-                    <span class="status-specification">BPC Chapel</span>
+                    <span class="status-specification">Any</span>
                   </li>
                   <li>
                     <span class="name-specification">Coordinators</span>
@@ -567,56 +532,6 @@ $loggedIn = isset($_SESSION["id"]);
             </div>
           </li>
         </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact Page -->
-  <section id="contact-page" class="py-5">
-    <div class="container">
-      <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold" style="color: #00A33C;">Get In Touch</h1>
-        <p class="fs-4 text-muted">Feel free to reach out to us for any queries or assistance. We're here to help!</p>
-      </div>
-      <div class="row g-5">
-        <!-- Contact Form -->
-        <div class="col-lg-6">
-          <div class="card-primary p-5 rounded shadow">
-            <form>
-              <div class="mb-4">
-                <label for="name" class="form-label fw-bold">Your Name</label>
-                <input type="text" class="form-control" id="name" placeholder="Enter your name" />
-              </div>
-              <div class="mb-4">
-                <label for="email" class="form-label fw-bold">Your Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Enter your email" />
-              </div>
-              <div class="mb-4">
-                <label for="message" class="form-label fw-bold">Your Message</label>
-                <textarea class="form-control" id="message" rows="5" placeholder="Type your message"></textarea>
-              </div>
-              <button type="submit" class="btn btn-lg text-white" style="background-color: #00A33C;">Send Message</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Contact Details -->
-        <div class="col-lg-6">
-          <div class="bg-white p-5 rounded shadow">
-            <h3 class="fw-bold mb-4" style="color: #00A33C;">Contact Information</h3>
-            <p class="fs-5 mb-3"><i class="bi bi-geo-alt-fill me-3"></i> Gloria Marris St. Cuta, Batangas City</p>
-            <p class="fs-5 mb-3"><i class="bi bi-envelope-fill me-3"></i> kkca.bpc.events@gmail.com</p>
-            <p class="fs-5 mb-3"><i class="bi bi-telephone-fill me-3"></i> +0916 743 6785</p>
-            <hr class="my-4">
-            <h3 class="fw-bold mb-4" style="color: #00A33C;">Follow Us</h3>
-            <div>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-facebook"></i></a>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-twitter"></i></a>
-              <a href="#" class="text-dark fs-4 me-3"><i class="bi bi-instagram"></i></a>
-              <a href="#" class="text-dark fs-4"><i class="bi bi-linkedin"></i></a>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </section>
