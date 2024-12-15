@@ -108,9 +108,17 @@ $active = 'history';
 
     <link rel="stylesheet" href="../assets/css/ev_tables.css">
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.9/dist/sweetalert2.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.9/dist/sweetalert2.min.js"></script>
+
     <style>
         .modal-dialog {
             max-height: 80%;
+        }
+
+        .pagination .page-item a.page-link {
+            color: #203b70;
         }
     </style>
 </head>
@@ -270,19 +278,41 @@ $active = 'history';
                                                                             </td>
                                                                             <td>
                                                                                 <div class="form-button-action">
-                                                                                    <button type="button" title="Edit" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
-                                                                                            '<?php echo htmlspecialchars($event['APID']); ?>',
-                                                                                            '<?php echo htmlspecialchars($event['event_name']); ?>',
-                                                                                            '<?php echo htmlspecialchars($event['category']); ?>',
-                                                                                            '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))); ?>',
-                                                                                            '<?php echo htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))); ?>',
-                                                                                            '<?php echo htmlspecialchars($event['venue']); ?>',
-                                                                                        )">
-                                                                                        <i class="fa fa-edit"></i>
-                                                                                    </button>
-                                                                                    <button type="button" data-bs-toggle="tooltip" title="Remove" class="btn btn-link btn-danger" onclick="deleteEvent('<?php echo htmlspecialchars($event['APID']); ?>')">
-                                                                                        <i class="fa fa-times"></i>
-                                                                                    </button>
+                                                                                    <?php
+                                                                                    if ($event['status'] == '0') {
+                                                                                        echo '
+                                                                                            <button type="button" title="Edit" class="btn btn-link btn-primary btn-lg" onclick="openEditModal(
+                                                                                                \'' . htmlspecialchars($event['APID']) . '\',
+                                                                                                \'' . htmlspecialchars($event['event_name']) . '\',
+                                                                                                \'' . htmlspecialchars($event['category']) . '\',
+                                                                                                \'' . htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['start_date']))) . '\',
+                                                                                                \'' . htmlspecialchars(date('Y-m-d\TH:i', strtotime($event['end_date']))) . '\',
+                                                                                                \'' . htmlspecialchars($event['venue']) . '\'
+                                                                                            )">
+                                                                                                <i class="fa fa-edit"></i>
+                                                                                            </button>
+                                                                                        ';
+                                                                                        echo '
+                                                                                        <button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg"
+                                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                                            <i class="fa fa-ban"></i>
+                                                                                        </button>
+                                                                                            ';
+                                                                                    } elseif ($event['status'] == '1') {
+                                                                                        echo '
+                                                                                            <button type="button" title="Cannot Edit when approved." class="btn btn-link btn-primary btn-lg" onclick="EditAlert()">
+                                                                                                <i class="fa fa-edit"></i>
+                                                                                            </button>
+                                                                                        ';
+                                                                                        echo '
+                                                                                        <button type="button" href="#" title="Cannot Cancel when approved." class="btn btn-link btn-warning btn-lg" onclick="CancelAlert()">
+                                                                                            <i class="fa fa-ban"></i>
+                                                                                        </button>
+                                                                                        ';
+                                                                                    } elseif ($event['status'] == '2') {
+                                                                                    } elseif ($event['status'] == '3') {
+                                                                                    }
+                                                                                    ?>
                                                                                 </div>
                                                                             </td>
                                                                         </tr>
@@ -320,7 +350,6 @@ $active = 'history';
                                                         </div>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </div>
@@ -493,6 +522,64 @@ $active = 'history';
             document.getElementById('APID').value = APID;
 
             $('#editTransacModal').modal('show');
+        }
+
+        function cancelEvent(APID, status) {
+            if (status == 3) {
+                Swal.fire({
+                    title: 'Already Cancelled!',
+                    text: 'This event has already been cancelled.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            } else {
+                Swal.fire({
+                    title: 'Do you want to cancel this?',
+                    text: "Cancelling this event will only refund 50% of the amount given,",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, cancel it!',
+                    cancelButtonText: 'No, cancel!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("POST", "modal/cancel_aptevents.php", true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                Swal.fire(
+                                    'The event has been cancelled.',
+                                    'Wait for the payment to be received within 24 hours. If not received, contact us.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();
+                                });
+                            }
+                        };
+                        xhr.send("APID=" + APID);
+                    }
+                });
+            }
+        }
+
+        function EditAlert() {
+            Swal.fire({
+                icon: "warning",
+                title: "Cannot Edit When Approved",
+                text: "The item has already been approved and cannot be edited. Please review the status before attempting any changes.",
+                confirmButtonText: "Got it"
+            });
+        }
+
+        function CancelAlert() {
+            Swal.fire({
+                icon: "warning",
+                title: "Cannot Cancel When Approved",
+                text: "The event has been approved and cannot be cancelled. Please verify the event status before attempting to cancel.",
+                confirmButtonText: "Got it"
+            });
         }
 
         function deleteEvent(APID) {

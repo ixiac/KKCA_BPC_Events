@@ -322,7 +322,6 @@ $active = "analytics";
             let expCostTrend = '';
             let totalCostTrend = '';
 
-            // Determine trends for expense and total costs
             if (exp_costs[exp_costs.length - 1] > exp_costs[0]) {
                 expCostTrend = 'increasing';
             } else if (exp_costs[exp_costs.length - 1] < exp_costs[0]) {
@@ -339,7 +338,6 @@ $active = "analytics";
                 totalCostTrend = 'stable';
             }
 
-            // Calculate profit margin trends
             const profitMargins = total_costs.map((total, index) => total - exp_costs[index]);
             const profitMarginTrend = profitMargins[profitMargins.length - 1] > profitMargins[0] ?
                 'increasing' :
@@ -347,12 +345,10 @@ $active = "analytics";
                 'decreasing' :
                 'stable';
 
-            // Basic analysis of trends
             analysis += `<p><strong>Expense Cost Trend:</strong> The expense cost has been ${expCostTrend} over the years.</p>`;
             analysis += `<p><strong>Total Cost Trend:</strong> The total cost has been ${totalCostTrend} over the years.</p>`;
             analysis += `<p><strong>Profit Margin Trend:</strong> The profit margin has been ${profitMarginTrend} over the years.</p>`;
 
-            // Strategy analysis based on trends
             if (expCostTrend === 'increasing' && totalCostTrend === 'increasing' && profitMarginTrend === 'decreasing') {
                 analysis += `<p><strong>Strategic Analysis:</strong> Rising expenses and total costs are eroding profit margins. Prioritize cost optimization strategies, such as automating manual processes, outsourcing non-core functions, or streamlining supply chains.</p>`;
             } else if (expCostTrend === 'decreasing' && totalCostTrend === 'stable' && profitMarginTrend === 'increasing') {

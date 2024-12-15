@@ -3,8 +3,9 @@ session_start();
 include("../partial/db.php");
 
 $query = "SELECT YEAR(start_date) AS year, 
-                 SUM(donation) AS total_donation, 
-                 SUM(expenses) AS total_expenses
+                SUM(donation) AS total_donation, 
+                SUM(budget) AS total_budget,
+                SUM(expenses) AS total_expenses
           FROM church_events
           GROUP BY YEAR(start_date)
           ORDER BY year";
@@ -18,7 +19,7 @@ $total_expenses = 0;
 
 while ($row = mysqli_fetch_assoc($result)) {
     $years[] = $row['year'];
-    $donations[] = $row['total_donation'];
+    $donations[] = $row['total_donation'] + $row['total_budget'];
     $expenses[] = $row['total_expenses'];
     $total_donations += $row['total_donation'];
     $total_expenses += $row['total_expenses'];

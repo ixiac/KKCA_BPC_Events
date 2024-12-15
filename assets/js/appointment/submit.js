@@ -4,11 +4,10 @@ function confirmSubmission() {
     const venue = document.getElementById('venue-select').value.trim();
     const startDate = document.getElementById('start_date').value.trim();
     const endDate = document.getElementById('end_date').value.trim();
-    const regFee = document.getElementById('registration-fee').value.trim();
     const refNo = document.getElementById('reference-no').value.trim();
     const refImg = document.getElementById('exampleFormControlFile1').value.trim();
 
-    if (!eventName || !category || !venue || !startDate || !endDate || !regFee || !refNo || !refImg) {
+    if (!eventName || !category || !venue || !startDate || !endDate || !refNo || !refImg) {
         Swal.fire({
             icon: 'error',
             title: 'Missing Information',

@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $start_date = isset($_POST['start_date']) ? $_POST['start_date'] : null;
     $end_date = isset($_POST['end_date']) ? $_POST['end_date'] : null;
     $venue = isset($_POST['venue']) ? $_POST['venue'] : null;
-    $reg_fee = isset($_POST['reg_fee']) ? $_POST['reg_fee'] : null;
     $ref_no = isset($_POST['ref_no']) ? $_POST['ref_no'] : null;
 
     if (isset($_FILES['ref_img']) && $_FILES['ref_img']['error'] == UPLOAD_ERR_OK) {
@@ -28,22 +27,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     switch ($category) {
         case "Wedding":
-            $exp_cost = 30000;
+            $exp_cost = 5000;
             break;
         case "Baptism":
-            $exp_cost = 1500;
+            $exp_cost = 1000;
             break;
         case "Celebrations":
-            $exp_cost = 10000;
+            $exp_cost = 2000;
             break;
         case "Funerals":
-            $exp_cost = 4500;
+            $exp_cost = 3000;
             break;
         case "Community Outreach":
-            $exp_cost = 3500;
+            $exp_cost = 2000;
             break;
         case "Youth Fellowship":
-            $exp_cost = 3500;
+            $exp_cost = 1000;
             break;
         default:
             $exp_cost = 0;
@@ -51,9 +50,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if ($event_name && $category && $start_date && $end_date && $venue && $reg_fee && $ref_no) {
-        $sql = "INSERT INTO appointment (event_name, event_by, category, start_date, end_date, venue, reg_fee, ref_no, ref_img, exp_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO appointment (event_name, event_by, category, start_date, end_date, venue, reg_fee, ref_no, ref_img, exp_cost) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssisss", $event_name, $_SESSION['id'], $category, $start_date, $end_date, $venue, $reg_fee, $ref_no, $ref_img, $exp_cost);
+        $stmt->bind_param("ssssssiss", $event_name, $_SESSION['id'], $category, $start_date, $end_date, $venue, $exp_cost, $ref_no, $ref_img);
 
         if ($stmt->execute()) {
             $_SESSION['swal_message'] = [

@@ -261,26 +261,42 @@ $active = 'history';
                                                         </td>
                                                         <td class="text-center">
                                                             <div class="form-button-action">
-                                                                <button type="button" title="Approve" class="btn btn-link btn-info"
-                                                                    onclick="approveEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                    <i class="fa fa-check"></i>
-                                                                </button>
-                                                                <button type="button" title="Completed" class="btn btn-link btn-success"
-                                                                    onclick="completeEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                    <i class="fa fa-check-circle"></i>
-                                                                </button>
-                                                                <button type="button" title="Cancel" class="btn btn-link btn-warning"
-                                                                    onclick="cancelEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                    <i class="fa fa-ban"></i>
-                                                                </button>
-                                                                <button type="button" title="Enter Total Cost" class="btn btn-link btn-primary"
-                                                                    onclick="changeCost('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['total_cost']); ?>')">
-                                                                    <i class="fas fa-clipboard-check"></i>
-                                                                </button>
-                                                                <button type="button" title="Remove" class="btn btn-link btn-danger"
-                                                                    onclick="confirmDelete('<?php echo htmlspecialchars($event['APID']); ?>')">
-                                                                    <i class="fa fa-times"></i>
-                                                                </button>
+                                                                <?php
+                                                                if ($event['status'] == '0') {
+                                                                    echo '<button type="button" title="Approve" class="btn btn-link btn-info btn-lg" 
+                                                                            onclick="approveEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            <i class="fa fa-check"></i>
+                                                                        </button>';
+                                                                    echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
+                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            <i class="fa fa-ban"></i>
+                                                                        </button>';
+                                                                } elseif ($event['status'] == '1') {
+                                                                    echo '<button type="button" title="Completed" class="btn btn-link btn-success btn-lg" 
+                                                                            onclick="completeEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            <i class="fas fa-tasks"></i>
+                                                                        </button>';
+                                                                    echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
+                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            <i class="fa fa-ban"></i>
+                                                                        </button>';
+                                                                } elseif ($event['status'] == '2') {
+                                                                    echo '<button type="button" title="Enter Budget" class="btn btn-link btn-primary btn-lg" 
+                                                                            onclick="changeBudget(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['exp_cost']) . '\')">
+                                                                            <i class="fas fa-tag"></i>
+                                                                        </button>';
+                                                                    echo '<button type="button" title="Enter Total Cost" class="btn btn-link btn-primary btn-lg" 
+                                                                            onclick="changeCost(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['total_cost']) . '\')">
+                                                                            <i class="fas fa-money-bill-wave"></i>
+                                                                        </button>';
+                                                                } elseif ($event['status'] == '3') {
+                                                                    echo '<span></span>';
+                                                                    echo '<button type="button" title="Remove" class="btn btn-link btn-danger btn-lg" 
+                                                                        onclick="confirmDelete(\'' . htmlspecialchars($event['APID']) . '\')">
+                                                                        <i class="fa fa-times"></i>
+                                                                    </button>';
+                                                                }
+                                                                ?>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -491,7 +507,7 @@ $active = 'history';
             console.log('APID:', APID, 'Current Cost:', currentCost);
 
             Swal.fire({
-                title: 'Change Total Cost',
+                title: 'Total Cost',
                 input: 'number',
                 inputValue: currentCost,
                 inputAttributes: {
@@ -540,6 +556,64 @@ $active = 'history';
                         })
                         .catch(error => {
                             Swal.fire('Error', 'There was a problem updating the cost.', 'error');
+                        });
+                }
+            });
+        }
+
+        function changeBudget(APID, currentBudget) {
+            console.log('APID:', APID, 'Current Budget:', currentBudget);
+
+            Swal.fire({
+                title: 'Budget',
+                input: 'number',
+                inputValue: currentBudget,
+                inputAttributes: {
+                    min: 0,
+                    step: 'any'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Update',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true,
+                preConfirm: (newBudget) => {
+                    console.log('New Budget:', newBudget);
+                    if (newBudget === "") {
+                        Swal.showValidationMessage("Cost cannot be empty");
+                        return false;
+                    }
+
+                    return fetch('modal/update_budget.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                APID: APID,
+                                exp_cost: newBudget
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data);
+
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Success',
+                                    text: 'The budget has been updated!',
+                                    icon: 'success',
+                                    willClose: () => {
+                                        setTimeout(() => {
+                                            location.reload();
+                                        }, 500);
+                                    }
+                                });
+                            } else {
+                                Swal.fire('Error', 'Failed to update the budget.', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire('Error', 'There was a problem updating the budget.', 'error');
                         });
                 }
             });

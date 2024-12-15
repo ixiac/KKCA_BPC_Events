@@ -129,46 +129,65 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                                             </div>
                                         </div>
                                         <div class="row px-3 pb-3">
-                                            <div class="col-md-4 form-group">
-                                                <label for="regFee">Registration Fee</label>
-                                                <input type="number" class="form-control" id="registration-fee" name="reg_fee" placeholder="Registration Fee">
-                                                <small id="down-payment-text" class="form-text text-muted ps-2">Down Payment: ₱5,000 - ₱15,000</small>
-                                            </div>
-                                            <div class="col-md-4 form-group">
+                                            <div class="col-md-6 form-group">
                                                 <label for="ref_no">Reference No.</label>
                                                 <input type="number" class="form-control" id="reference-no" name="ref_no" placeholder="Reference No.">
+                                                <small id="down-payment-text" class="form-text text-muted ps-2">Down Payment: ₱5,000</small>
                                             </div>
-                                            <div class="col-md-4 form-group">
-                                                <label for="exampleFormControlFile1">Reference Image</label>
+                                            <div class="col-md-6 form-group">
+                                                <label for="exampleFormControlFile1">Reference Image</label><br>
                                                 <input type="file" class="form-control-file mt-2" id="exampleFormControlFile1" name="ref_img">
                                             </div>
                                         </div>
                                         <div class="row justify-content-center mx-2 mt-3">
-                                            <button type="button" onclick="confirmSubmission()" class="btn fs-5" style="width: 30%; color: white; background-color: #00A33C; border-radius: 6px">Submit</button>
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#termsModal" class="btn fs-5" style="width: 30%; color: white; background-color: #00A33C; border-radius: 6px">Submit</button>
                                         </div>
                                     </form>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="termsModalLabel" style="color: black">Terms and Conditions</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p style="color: black">
+                                            By proceeding, you agree to the terms and conditions of our services. Please ensure that all the provided information is accurate and that you have reviewed our policies regarding cancellations and modifications.
+                                        </p>
+                                        <ul style="color: black">
+                                            <li>Payments should be accurate. If the payment is not accurate, the appointment cannot be approved until further notice.</li>
+                                            <li>After submitting the event form, your event will be marked as <strong>Pending</strong> until approved by the staff.</li>
+                                            <li>While your event is pending, you can edit or cancel the event.</li>
+                                            <li>Once your event is approved, you will no longer be able to edit or cancel it.</li>
+                                            <li>Cancelling an event will result in a <strong>75% refund</strong> of the payment made.</li>
+                                        </ul>
+                                        <p style="color: black">
+                                            For more details, contact our support team or message us in our facebook page.
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn" data-bs-dismiss="modal" onclick="confirmSubmission()" style="background-color: #00A33C; color: white">I have read and agree</button>
+                                        <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #d33; color: white">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-5">
-                            <div class="fs-3">Venue Images</div>
+                            <div class="fs-3">Method of Transaction</div>
                             <div id="appointmentCarousel" class="carousel slide mt-4" data-bs-ride="carousel">
                                 <div class="carousel-inner" style="border-radius: 10px">
                                     <div class="carousel-item active">
                                         <img src="venue/venue_1.jpg" class="d-block w-100" alt="Image 1">
-                                        <div class="text-center">BPC Chapel Figure 1</div>
+                                        <div class="text-center">GCash No. 09717436853</div>
                                     </div>
                                     <div class="carousel-item">
                                         <img src="venue/venue_2.jpg" class="d-block w-100" alt="Image 2">
-                                        <div class="text-center">BPC Chapel Figure 2</div>
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img src="venue/venue_3.jpg" class="d-block w-100" alt="Image 2">
-                                        <div class="text-center">BPC Open Court Figure 1</div>
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img src="venue/venue_4.jpg" class="d-block w-100" alt="Image 2">
-                                        <div class="text-center">BPC Open Court Figure 2</div>
+                                        <div class="text-center">GCash No. 09918096921</div>
                                     </div>
                                 </div>
                                 <button class="carousel-control-prev" type="button" data-bs-target="#appointmentCarousel" data-bs-slide="prev">
