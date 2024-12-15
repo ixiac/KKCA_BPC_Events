@@ -23,7 +23,15 @@ $events_query = "
             WHEN e.event_by LIKE 'S%' THEN s.username
             WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
             ELSE 'Unknown' 
-        END AS event_by_username
+        END AS event_by_username,
+        CASE 
+            WHEN e.event_by LIKE 'AD%' THEN ad.email
+            WHEN e.event_by LIKE 'SF%' THEN sf.email
+            WHEN e.event_by LIKE 'CM%' THEN cm.email
+            WHEN e.event_by LIKE 'S%' THEN s.email
+            WHEN e.event_by REGEXP '^[0-9]+$' THEN c.email
+            ELSE 'Unknown' 
+        END AS event_by_email
     FROM appointment e
     LEFT JOIN admin ad ON e.event_by = ad.AID
     LEFT JOIN staff sf ON e.event_by = sf.SFID
@@ -31,6 +39,7 @@ $events_query = "
     LEFT JOIN student s ON e.event_by = s.SID
     LEFT JOIN customer c ON e.event_by = c.CID
 ";
+
 
 $events_stmt = $conn->prepare($events_query);
 $events_stmt->execute();
@@ -264,11 +273,11 @@ $active = 'history';
                                                                 <?php
                                                                 if ($event['status'] == '0') {
                                                                     echo '<button type="button" title="Approve" class="btn btn-link btn-info btn-lg" 
-                                                                            onclick="approveEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            onclick="approveEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
                                                                             <i class="fa fa-check"></i>
-                                                                        </button>';
+                                                                    </button>';
                                                                     echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
-                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
                                                                             <i class="fa fa-ban"></i>
                                                                         </button>';
                                                                 } elseif ($event['status'] == '1') {
@@ -277,9 +286,9 @@ $active = 'history';
                                                                             <i class="fas fa-tasks"></i>
                                                                         </button>';
                                                                     echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
-                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
-                                                                            <i class="fa fa-ban"></i>
-                                                                        </button>';
+                                                                        onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
+                                                                        <i class="fa fa-ban"></i>
+                                                                    </button>';
                                                                 } elseif ($event['status'] == '2') {
                                                                     echo '<button type="button" title="Enter Budget" class="btn btn-link btn-primary btn-lg" 
                                                                             onclick="changeBudget(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['exp_cost']) . '\')">
@@ -383,41 +392,71 @@ $active = 'history';
     <?php include("partial/script.php"); ?>
 
     <script>
-        function approveEvent(APID, status) {
+        function approveEvent(APID, status, eventName, email) {
+            console.log("approveEvent called with:", {
+                APID,
+                status,
+                eventName,
+                email
+            });
+
             if (status == 1) {
                 Swal.fire({
                     title: 'Already Approved!',
-                    text: 'This event has already been approved.',
+                    text: `The event "${eventName}" has already been approved.`,
                     icon: 'info',
                     confirmButtonText: 'OK'
                 });
+                console.log(`Event "${eventName}" is already approved.`);
             } else {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "Do you want to approve this event?",
+                    text: `Do you want to approve the event "${eventName}"?`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
+                    confirmButtonColor: '#0023ac',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, approve it!',
                     cancelButtonText: 'No, cancel!'
                 }).then((result) => {
+                    console.log("User response to Swal confirmation:", result);
+
                     if (result.isConfirmed) {
+                        console.log(`User confirmed approval for event "${eventName}".`);
+
                         var xhr = new XMLHttpRequest();
                         xhr.open("POST", "modal/approve_event.php", true);
                         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
                         xhr.onreadystatechange = function() {
-                            if (xhr.readyState == 4 && xhr.status == 200) {
-                                Swal.fire(
-                                    'Approved!',
-                                    'The event has been approved.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();
-                                });
+                            console.log(`XHR readyState: ${xhr.readyState}, status: ${xhr.status}`);
+
+                            if (xhr.readyState == 4) {
+                                console.log("XHR response:", xhr.responseText);
+
+                                if (xhr.status == 200) {
+                                    Swal.fire(
+                                        'Approved!',
+                                        `The event "${eventName}" has been approved, and a notification has been sent to ${email}.`,
+                                        'success'
+                                    ).then(() => {
+                                        console.log("Reloading page...");
+                                        location.reload();
+                                    });
+                                } else {
+                                    console.error("Failed to approve event. Status:", xhr.status);
+                                }
                             }
                         };
-                        xhr.send("APID=" + APID);
+
+                        const requestData = "APID=" + APID +
+                            "&email=" + encodeURIComponent(email) +
+                            "&eventName=" + encodeURIComponent(eventName);
+
+                        console.log("Sending XHR with data:", requestData);
+                        xhr.send(requestData);
+                    } else {
+                        console.log("User cancelled approval.");
                     }
                 });
             }
@@ -463,18 +502,18 @@ $active = 'history';
             }
         }
 
-        function cancelEvent(APID, status) {
+        function cancelEvent(APID, status, eventName, email) {
             if (status == 3) {
                 Swal.fire({
                     title: 'Already Cancelled!',
-                    text: 'This event has already been cancelled.',
+                    text: `The event "${eventName}" has already been cancelled.`,
                     icon: 'info',
                     confirmButtonText: 'OK'
                 });
             } else {
                 Swal.fire({
                     title: 'Are you sure?',
-                    text: "Do you want to cancel this event?",
+                    text: `Do you want to cancel the event "${eventName}"?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -490,18 +529,19 @@ $active = 'history';
                             if (xhr.readyState == 4 && xhr.status == 200) {
                                 Swal.fire(
                                     'Cancelled!',
-                                    'The event has been cancelled.',
+                                    `The event "${eventName}" has been cancelled, and a notification has been sent to ${email}.`,
                                     'success'
                                 ).then(() => {
                                     location.reload();
                                 });
                             }
                         };
-                        xhr.send("APID=" + APID);
+                        xhr.send("APID=" + APID + "&email=" + encodeURIComponent(email) + "&eventName=" + encodeURIComponent(eventName));
                     }
                 });
             }
         }
+
 
         function changeCost(APID, currentCost) {
             console.log('APID:', APID, 'Current Cost:', currentCost);

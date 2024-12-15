@@ -23,7 +23,15 @@ $events_query = "
             WHEN e.event_by LIKE 'S%' THEN s.username
             WHEN e.event_by REGEXP '^[0-9]+$' THEN c.username
             ELSE 'Unknown' 
-        END AS event_by_username
+        END AS event_by_username,
+        CASE 
+            WHEN e.event_by LIKE 'AD%' THEN ad.email
+            WHEN e.event_by LIKE 'SF%' THEN sf.email
+            WHEN e.event_by LIKE 'CM%' THEN cm.email
+            WHEN e.event_by LIKE 'S%' THEN s.email
+            WHEN e.event_by REGEXP '^[0-9]+$' THEN c.email
+            ELSE 'Unknown' 
+        END AS event_by_email
     FROM appointment e
     LEFT JOIN admin ad ON e.event_by = ad.AID
     LEFT JOIN staff sf ON e.event_by = sf.SFID
@@ -239,7 +247,7 @@ $active = 'history';
                                                 $events_result->data_seek(0);
                                                 while ($event = $events_result->fetch_assoc()) { ?>
                                                     <td class="text-center"><?php echo $event['event_name']; ?></td>
-                                                    <td class="text-center"><?php echo $event['event_by_username']; ?></td>
+                                                    <td class="text-center"><?php echo $event['event_by_email']; ?></td>
                                                     <td class="text-center"><?php echo $event['category']; ?></td>
                                                     <td class="text-center">₱<?php echo number_format($event['reg_fee'], 2); ?></td>
                                                     <td class="text-center"><?php echo ($event['ref_no']); ?></td>
@@ -266,22 +274,42 @@ $active = 'history';
                                                     </td>
                                                     <td class="text-center">
                                                         <div class="form-button-action">
-                                                            <button type="button" title="Approve" class="btn btn-link btn-info"
-                                                                onclick="approveEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                <i class="fa fa-check"></i>
-                                                            </button>
-                                                            <button type="button" title="Completed" class="btn btn-link btn-success"
-                                                                onclick="completeEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                <i class="fa fa-check-circle"></i>
-                                                            </button>
-                                                            <button type="button" title="Cancel" class="btn btn-link btn-warning"
-                                                                onclick="cancelEvent('<?php echo htmlspecialchars($event['APID']); ?>', '<?php echo htmlspecialchars($event['status']); ?>')">
-                                                                <i class="fa fa-ban"></i>
-                                                            </button>
-                                                            <button type="button" title="Remove" class="btn btn-link btn-danger"
-                                                                onclick="confirmDelete('<?php echo htmlspecialchars($event['APID']); ?>')">
-                                                                <i class="fa fa-times"></i>
-                                                            </button>
+                                                            <?php
+                                                            if ($event['status'] == '0') {
+                                                                echo '<button type="button" title="Approve" class="btn btn-link btn-info btn-lg" 
+                                                                            onclick="approveEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
+                                                                            <i class="fa fa-check"></i>
+                                                                    </button>';
+                                                                echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
+                                                                            onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
+                                                                            <i class="fa fa-ban"></i>
+                                                                        </button>';
+                                                            } elseif ($event['status'] == '1') {
+                                                                echo '<button type="button" title="Completed" class="btn btn-link btn-success btn-lg" 
+                                                                            onclick="completeEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\')">
+                                                                            <i class="fas fa-tasks"></i>
+                                                                        </button>';
+                                                                echo '<button type="button" title="Cancel" class="btn btn-link btn-warning btn-lg" 
+                                                                        onclick="cancelEvent(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['status']) . '\', \'' . htmlspecialchars($event['event_name']) . '\', \'' . htmlspecialchars($event['event_by_email']) . '\')">
+                                                                        <i class="fa fa-ban"></i>
+                                                                    </button>';
+                                                            } elseif ($event['status'] == '2') {
+                                                                echo '<button type="button" title="Enter Budget" class="btn btn-link btn-primary btn-lg" 
+                                                                            onclick="changeBudget(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['exp_cost']) . '\')">
+                                                                            <i class="fas fa-tag"></i>
+                                                                        </button>';
+                                                                echo '<button type="button" title="Enter Total Cost" class="btn btn-link btn-primary btn-lg" 
+                                                                            onclick="changeCost(\'' . htmlspecialchars($event['APID']) . '\', \'' . htmlspecialchars($event['total_cost']) . '\')">
+                                                                            <i class="fas fa-money-bill-wave"></i>
+                                                                        </button>';
+                                                            } elseif ($event['status'] == '3') {
+                                                                echo '<span></span>';
+                                                                echo '<button type="button" title="Remove" class="btn btn-link btn-danger btn-lg" 
+                                                                        onclick="confirmDelete(\'' . htmlspecialchars($event['APID']) . '\')">
+                                                                        <i class="fa fa-times"></i>
+                                                                    </button>';
+                                                            }
+                                                            ?>
                                                         </div>
                                                     </td>
                                                     </tr>
