@@ -1,6 +1,16 @@
 <?php
 session_start();
 include("db.php");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/phpmailer/phpmailer/src/Exception.php';
+require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
+require 'vendor/phpmailer/phpmailer/src/SMTP.php';
 
 $error = '';
 $success = '';
@@ -28,18 +38,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $error = 'Username or email already exists';
         } else {
-            $insert_query = "INSERT INTO customer (username, password, fname, lname, sex, address, tel_no, age, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $verification_token = bin2hex(random_bytes(16));
+            $insert_query = "INSERT INTO customer (username, password, fname, lname, sex, address, tel_no, age, email, verification_token, is_verified) 
+                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)";
             $stmt = $conn->prepare($insert_query);
-            $stmt->bind_param("ssssissis", $username, $password, $fname, $lname, $sex, $address, $tel_no, $age, $email);
+            $stmt->bind_param("ssssississ", $username, $password, $fname, $lname, $sex, $address, $tel_no, $age, $email, $verification_token);
 
             if ($stmt->execute()) {
-                $success = 'Account created successfully! Redirecting...';
+                $mail = new PHPMailer(true);
+                try {
+                    $mail->SMTPDebug = 2;
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'kkca.bpc.events@gmail.com';
+                    $mail->Password = 'txcy efwu nnfp lbjf';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
 
-                echo "<script>
-                        setTimeout(function(){
-                        window.location.href = 'login';
-                        }, 1000);
-                    </script>";
+                    $mail->setFrom('kkca.bpc.events@gmail.com', 'KKCA BPC Events');
+                    $mail->addAddress($email);
+
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Verify Your Email Address';
+                    $mail->Body = "
+                        <h1>Verify Your Email Address</h1>
+                        <p>Click the link below to verify your email address:</p>
+                        <a href='http://kkcabpc.events/verify.php?token=$verification_token'>Verify Email</a>
+                    ";
+
+                    $mail->send();
+                    $success = 'Account created successfully! Please check your email to verify your account.';
+                } catch (Exception $e) {
+                    $error = 'Could not send verification email. Please try again.';
+                    echo '<pre>';
+                    echo 'Mailer Error: ' . $mail->ErrorInfo . "\n";
+                    echo '</pre>';
+                }
             } else {
                 $error = 'Error: Could not create account';
             }
