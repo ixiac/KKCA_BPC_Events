@@ -126,6 +126,60 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-5 mt-5">
+                        <div class="fs-4">
+                            Contact Us
+                        </div>
+                        <div class="card mt-3">
+                            <div class="card-body">
+                                <div class="card-title fw-mediumbold">Suggested People</div>
+                                <div class="card-list">
+                                    <div class="item-list">
+                                        <div class="avatar">
+                                            <img src="../assets/img/BPC-logo-header.png" alt="..." class="avatar-img rounded-circle">
+                                        </div>
+                                        <div class="info-user ms-3">
+                                            <div class="username">KKCA and BPC</div>
+                                            <div class="status">Event Hub</div>
+                                        </div>
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kkca.bpc.events@gmail.com" target="_blank">
+                                            <button class="btn btn-icon btn-link op-8 me-1">
+                                                <i class="far fa-envelope"></i>
+                                            </button>
+                                        </a>
+                                    </div>
+                                    <div class="item-list">
+                                        <div class="avatar">
+                                            <img src="../assets/img/BPC-logo-header.png" alt="..." class="avatar-img rounded-circle">
+                                        </div>
+                                        <div class="info-user ms-3">
+                                            <div class="username">Batangas Presbyterian Church</div>
+                                            <div class="status">Community, Owner</div>
+                                        </div>
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=kkca.bpc.events@gmail.com" target="_blank">
+                                            <button class="btn btn-icon btn-link op-8 me-1">
+                                                <i class="far fa-envelope"></i>
+                                            </button>
+                                        </a>
+                                    </div>
+                                    <div class="item-list">
+                                        <div class="avatar">
+                                            <img src="../assets/img/BPC-logo-header.png" alt="..." class="avatar-img rounded-circle">
+                                        </div>
+                                        <div class="info-user ms-3">
+                                            <div class="username">BSU Capstone Team</div>
+                                            <div class="status">System Developers</div>
+                                        </div>
+                                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=21-04485@g.batstate-u.edu.ph" target="_blank">
+                                            <button class="btn btn-icon btn-link op-8 me-1">
+                                                <i class="far fa-envelope"></i>
+                                            </button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

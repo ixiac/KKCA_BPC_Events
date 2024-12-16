@@ -260,8 +260,14 @@ $active = 'history';
                                                                         <tr class="event-row" data-status="<?php echo $event['status']; ?>" data-apid="<?php echo $event['APID']; ?>">
                                                                             <td class="text-center"><?php echo $event['event_name']; ?></td>
                                                                             <td class="text-center"><?php echo $event['category']; ?></td>
-                                                                            <td class="text-center"><?php echo $event['start_date']; ?></td>
-                                                                            <td class="text-center"><?php echo $event['end_date']; ?></td>
+                                                                            <td class="text-center">
+                                                                                <span style="display: none;"><?php echo strtotime($event['start_date']); ?></span>
+                                                                                <?php echo date('F j, Y, g:i A', strtotime($event['start_date'])); ?>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <span style="display: none;"><?php echo strtotime($event['end_date']); ?></span>
+                                                                                <?php echo date('F j, Y, g:i A', strtotime($event['end_date'])); ?>
+                                                                            </td>
                                                                             <td class="text-center"><?php echo $event['venue']; ?></td>
                                                                             <td class="text-center">
                                                                                 <?php
